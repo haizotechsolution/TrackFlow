@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+venv/
+env/
+
+# Django
+*.log
+*.pot
+db.sqlite3
+media/
+staticfiles/
+
+# Environment variables
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
