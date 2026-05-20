@@ -1,25 +1,45 @@
 from django.db import models
+from apps.shipments.models import Shipment
 
-class Shipment(models.Model):
-    STATUS_CHOICES = [
-        ("PENDING", "Pending"),
-        ("SHIPPED", "Shipped"),
-        ("DELIVERED", "Delivered"),
-    ]
 
-    tracking_id = models.CharField(max_length=20, unique=True)
-    sender_name = models.CharField(max_length=100)
-    receiver_name = models.CharField(max_length=100)
-    pickup_address = models.TextField()
-    delivery_address = models.TextField()
+class Route(models.Model):
 
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default="PENDING"
+    shipment = models.OneToOneField(
+        Shipment,
+        on_delete=models.CASCADE,
+        related_name='route'
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    origin = models.CharField(
+        max_length=255
+    )
+
+    destination = models.CharField(
+        max_length=255
+    )
+
+    current_hub = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    estimated_distance_km = models.FloatField()
+
+    estimated_delivery_time = models.DateTimeField()
+
+    is_route_optimized = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
 
     def __str__(self):
-        return self.tracking_id
+
+        return f"{self.shipment.tracking_number} Route"

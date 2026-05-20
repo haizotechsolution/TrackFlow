@@ -1,12 +1,4 @@
 from django.contrib import admin
-from django.urls import path,include
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path(
-    'api/tracking/',
-    include('apps.tracking.urls'),
-),
 from django.urls import path, include
 from django.http import JsonResponse
 
@@ -14,13 +6,23 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from apps.accounts.views import TrackFlowTokenObtainPairView
+from apps.accounts.views import (
+    TrackFlowTokenObtainPairView
+)
 
 
 def health_check(request):
-    return JsonResponse({'status': 'ok', 'db': 'ok', 'redis': 'skipped', 'celery': 'skipped'})
+
+    return JsonResponse({
+        'status': 'ok',
+        'db': 'ok',
+        'redis': 'skipped',
+        'celery': 'skipped'
+    })
+
 
 urlpatterns = [
+
     path('admin/', admin.site.urls),
 
     # JWT Authentication
@@ -35,7 +37,19 @@ urlpatterns = [
         TokenRefreshView.as_view(),
         name='token_refresh'
     ),
-    path('health/', health_check, name='health-check'),
+
+    # Health Check
+    path(
+        'health/',
+        health_check,
+        name='health-check'
+    ),
+
+    # Tracking APIs
+    path(
+        'api/tracking/',
+        include('apps.tracking.urls')
+    ),
 
     # Shipments APIs
     path(
@@ -60,5 +74,10 @@ urlpatterns = [
         'api/',
         include('apps.routing.urls')
     ),
-    path('api/accounts/', include('apps.accounts.urls')),
+
+    # Accounts APIs
+    path(
+        'api/accounts/',
+        include('apps.accounts.urls')
+    ),
 ]

@@ -1,7 +1,21 @@
 from django.urls import path
-from .views import test_api, protected_test
+
+from .views import (
+    RouteListCreateView,
+    RouteDetailView,
+)
 
 urlpatterns = [
-    path('test/', test_api),
-    path('protected/', protected_test),
+
+    path(
+        'routes/',
+        RouteListCreateView.as_view(),
+        name='routes-list-create',
+    ),
+
+    path(
+        'routes/<int:pk>/',
+        RouteDetailView.as_view(),
+        name='route-detail',
+    ),
 ]

@@ -1,14 +1,24 @@
-from django.http import JsonResponse
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from rest_framework import generics
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def protected_test(request):
-    return Response({
-        "message": "You are authenticated!",
-        "user": str(request.user)
-    })
-def test_api(request):
-    return JsonResponse({"message": "Routing app working"})
+from .models import Route
+from .serializers import RouteSerializer
+
+
+class RouteListCreateView(
+    generics.ListCreateAPIView
+):
+
+    queryset = Route.objects.all().order_by(
+        '-created_at'
+    )
+
+    serializer_class = RouteSerializer
+
+
+class RouteDetailView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    queryset = Route.objects.all()
+
+    serializer_class = RouteSerializer
