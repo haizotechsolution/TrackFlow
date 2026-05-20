@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Drivers
+</h2>
+
+<div class="table-container">
+
+    <table class="table table-striped">
+
+        <thead>
+
+            <tr>
+                <th>Name</th>
+                <th>Vehicle</th>
+                <th>Status</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>Arun</td>
+                <td>Bike</td>
+                <td>
+                    <span class="badge bg-success">
+                        Active
+                    </span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Suresh</td>
+                <td>Van</td>
+                <td>
+                    <span class="badge bg-danger">
+                        Offline
+                    </span>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

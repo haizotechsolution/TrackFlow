@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Operations Dashboard
+</h2>
+
+<div class="row">
+
+    {% include 'components/stats_card.html'
+    with title='Live Drivers' value='45' %}
+
+    {% include 'components/stats_card.html'
+    with title='Pending Orders' value='125' %}
+
+    {% include 'components/stats_card.html'
+    with title='Failed Deliveries' value='18' %}
+
+    {% include 'components/stats_card.html'
+    with title='NDR Cases' value='32' %}
+
+</div>
+
+{% endblock %}
