@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>COD Remittance</title>
+
+<style>
+
+body{
+font-family:Arial;
+padding:40px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#1d4ed8;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border:1px solid gray;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>COD Remittance</h1>
+
+<table>
+
+<tr>
+
+<th>Shipment</th>
+
+<th>COD Amount</th>
+
+<th>Remitted</th>
+
+</tr>
+
+{% for c in cods %}
+
+<tr>
+
+<td>{{ c.shipment }}</td>
+
+<td>{{ c.cod_amount }}</td>
+
+<td>{{ c.remitted }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+
+</html>
