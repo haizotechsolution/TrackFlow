@@ -2,8 +2,6 @@ from django.db import models
 
 from django_fsm import FSMField, transition
 
-from apps.accounts.models import Merchant
-
 
 BOOKED = 'BOOKED'
 
@@ -100,30 +98,25 @@ class Shipment(models.Model):
         unique=True
     )
 
-    merchant = models.ForeignKey(
-        Merchant,
-        on_delete=models.CASCADE
-    )
+    
 
-    sender_address = models.ForeignKey(
-        Address,
-        on_delete=models.CASCADE,
-        related_name='sender_shipments'
-    )
+    sender_address = models.TextField()
 
-    receiver_address = models.ForeignKey(
-        Address,
-        on_delete=models.CASCADE,
-        related_name='receiver_shipments'
-    )
+    receiver_address = models.TextField() 
 
     weight = models.FloatField()
 
-    status = FSMField(
-        default=BOOKED,
-        choices=STATUS_CHOICES
-    )
+    STATUS_CHOICES = [
+    ('PENDING', 'Pending'),
+    ('SHIPPED', 'Shipped'),
+    ('DELIVERED', 'Delivered'),
+]
 
+    status = models.CharField(
+    max_length=20,
+    choices=STATUS_CHOICES,
+    default='PENDING'
+)
     created_at = models.DateTimeField(
         auto_now_add=True
     )
