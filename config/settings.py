@@ -48,6 +48,8 @@ INSTALLED_APPS = [
 
     'apps.accounts',
     'apps.shipments',
+    'apps.tracking',
+    'apps.routing',
 ]
 
 MIDDLEWARE = [
@@ -91,6 +93,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+ASGI_APPLICATION = "config.asgi.application"
 
 
 # Database
@@ -176,3 +179,12 @@ REST_FRAMEWORK = {
 # Custom User Model
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
