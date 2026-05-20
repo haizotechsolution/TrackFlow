@@ -1,0 +1,23 @@
+<nav class="navbar bg-white rounded shadow-sm mb-4 p-3">
+
+    <div class="container-fluid">
+
+        <span class="navbar-brand fw-bold">
+            Dashboard
+        </span>
+
+        <div>
+
+            <span class="me-3">
+                {{ request.user.email }}
+            </span>
+
+            <a href="#" class="btn btn-danger btn-sm">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>

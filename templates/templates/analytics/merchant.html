@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Merchant Analytics
+</h2>
+
+<div class="card-box">
+
+    <canvas id="analyticsChart"></canvas>
+
+</div>
+
+<script>
+
+const analyticsChart = document.getElementById('analyticsChart');
+
+new Chart(analyticsChart, {
+
+    type: 'bar',
+
+    data: {
+
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+
+        datasets: [{
+
+            label: 'Revenue',
+
+            data: [50000, 70000, 90000, 120000, 150000]
+
+        }]
+    }
+
+});
+
+</script>
+
+{% endblock %}

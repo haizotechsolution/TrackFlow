@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Operations Analytics
+</h2>
+
+<div class="card-box">
+
+    <canvas id="opsAnalyticsChart"></canvas>
+
+</div>
+
+<script>
+
+const opsChart = document.getElementById('opsAnalyticsChart');
+
+new Chart(opsChart, {
+
+    type: 'pie',
+
+    data: {
+
+        labels: ['Delivered', 'Failed', 'RTO'],
+
+        datasets: [{
+
+            data: [1200, 200, 90]
+
+        }]
+    }
+
+});
+
+</script>
+
+{% endblock %}

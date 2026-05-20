@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Shipment List
+</h2>
+
+<div class="table-container">
+
+    <table class="table table-hover">
+
+        <thead>
+
+            <tr>
+                <th>AWB</th>
+                <th>Customer</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>AWB1001</td>
+                <td>Rahul</td>
+                <td>Chennai</td>
+                <td>
+                    <span class="badge bg-success">
+                        Delivered
+                    </span>
+                </td>
+                <td>20 May 2026</td>
+            </tr>
+
+            <tr>
+                <td>AWB1002</td>
+                <td>Karthik</td>
+                <td>Bangalore</td>
+                <td>
+                    <span class="badge bg-warning">
+                        In Transit
+                    </span>
+                </td>
+                <td>20 May 2026</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
