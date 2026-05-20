@@ -1,50 +1,36 @@
 from pathlib import Path
-<<<<<<< HEAD
-
-
-# Build paths inside the project
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# ==========================
-# SECURITY
-# ==========================
-
-SECRET_KEY = "django-insecure-trackflow-dev"
-
-DEBUG = True
-
-ALLOWED_HOSTS = ["*"]
-
-
-# ==========================
-# APPLICATIONS
-# ==========================
-
-INSTALLED_APPS = [
-
-    # Django apps
-=======
 from datetime import timedelta
+import os
+import environ
 
+# -------------------------------------------------------------------
+# BASE DIRECTORY
+# -------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# -------------------------------------------------------------------
+# ENV SETUP
+# -------------------------------------------------------------------
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+# IMPORTANT: load .env correctly
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # -------------------------------------------------------------------
 # SECURITY SETTINGS
 # -------------------------------------------------------------------
-SECRET_KEY = 'django-insecure-change-this-in-production'
-DEBUG = True
+SECRET_KEY = env("SECRET_KEY")
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
-
 
 # -------------------------------------------------------------------
 # APPLICATIONS
 # -------------------------------------------------------------------
 INSTALLED_APPS = [
     # Django core apps
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,41 +38,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-<<<<<<< HEAD
-    # Third party
-=======
     # Third-party apps
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'django_fsm',
 
-<<<<<<< HEAD
-    # TrackFlow apps
-    'apps.accounts',
-    'apps.shipments',
-    'apps.billing',
-    'apps.returns',
-]
-
-
-# ==========================
-# MIDDLEWARE
-# ==========================
-
-=======
     # Local apps (TrackFlow)
     'apps.accounts',
     'apps.shipments',
     'apps.routing',
+    'apps.billing',
+    'apps.returns',
 ]
-
 
 # -------------------------------------------------------------------
 # MIDDLEWARE
 # -------------------------------------------------------------------
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -97,33 +66,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 ROOT_URLCONF = 'config.urls'
 
-
-<<<<<<< HEAD
-# ==========================
-# TEMPLATES
-# ==========================
-
-TEMPLATES = [
-    {
-        'BACKEND':
-        'django.template.backends.django.DjangoTemplates',
-
-        'DIRS': [
-            BASE_DIR / "templates"
-        ],
-
-=======
 # -------------------------------------------------------------------
 # TEMPLATES
 # -------------------------------------------------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -135,170 +86,68 @@ TEMPLATES = [
     },
 ]
 
-
-<<<<<<< HEAD
-WSGI_APPLICATION = 'config.wsgi.application'
-
-
-# ==========================
-# DATABASE (SQLite local)
-# ==========================
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-
-=======
 # -------------------------------------------------------------------
 # WSGI
 # -------------------------------------------------------------------
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # -------------------------------------------------------------------
-# DATABASE (SQLite for development)
+# DATABASE (SQLite for now)
 # -------------------------------------------------------------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-
-<<<<<<< HEAD
-# ==========================
-# PASSWORD VALIDATION
-# ==========================
-
-=======
 # -------------------------------------------------------------------
 # PASSWORD VALIDATION
 # -------------------------------------------------------------------
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
 AUTH_PASSWORD_VALIDATORS = [
-
     {
-        'NAME':
-        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
-
-<<<<<<< HEAD
-# ==========================
-# INTERNATIONALIZATION
-# ==========================
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'Asia/Kolkata'
-
-=======
 # -------------------------------------------------------------------
 # INTERNATIONALIZATION
 # -------------------------------------------------------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
 USE_I18N = True
 USE_TZ = True
 
-
-<<<<<<< HEAD
-# ==========================
-# STATIC / MEDIA
-# ==========================
-
-=======
 # -------------------------------------------------------------------
 # STATIC FILES
 # -------------------------------------------------------------------
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+APPEND_SLASH = False
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static"
-]
-
-<<<<<<< HEAD
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-MEDIA_URL = "/media/"
-
-MEDIA_ROOT = BASE_DIR / "media"
-
-
-# ==========================
-# CELERY
-# ==========================
-
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
-
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
-
-CELERY_ACCEPT_CONTENT = ['json']
-
-CELERY_TASK_SERIALIZER = 'json'
-
-CELERY_RESULT_SERIALIZER = 'json'
-
-
-# ==========================
-# DRF
-# ==========================
-
-=======
 # -------------------------------------------------------------------
 # DEFAULT AUTO FIELD
 # -------------------------------------------------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # -------------------------------------------------------------------
 # DJANGO REST FRAMEWORK
 # -------------------------------------------------------------------
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-
     ),
-<<<<<<< HEAD
-
-    'DEFAULT_FILTER_BACKENDS': [
-
-        'django_filters.rest_framework.DjangoFilterBackend',
-    ],
-}
-
-
-# ==========================
-# CUSTOM USER
-# ==========================
-
-AUTH_USER_MODEL = 'accounts.CustomUser'
-
-
-# ==========================
-# DEFAULT PK
-# ==========================
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-=======
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
@@ -307,15 +156,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
     ),
 }
 
-
 # -------------------------------------------------------------------
 # SIMPLE JWT CONFIG
 # -------------------------------------------------------------------
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
->>>>>>> 844115f (Completed JWT authentication and shipment CRUD APIs)
+
+# -------------------------------------------------------------------
+# CUSTOM USER MODEL
+# -------------------------------------------------------------------
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# -------------------------------------------------------------------
+# CELERY CONFIG
+# -------------------------------------------------------------------
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://127.0.0.1:6379/0')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://127.0.0.1:6379/0')
+
+TRACKFLOW_STORAGE_BACKEND = env('TRACKFLOW_STORAGE_BACKEND', default='local')
+TRACKFLOW_ASYNC_LABELS = env.bool('TRACKFLOW_ASYNC_LABELS', default=False)
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='ap-south-1')

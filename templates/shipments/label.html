@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Label {{ shipment.awb }}</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:24px;color:#111}
+    .label{border:2px solid #111;padding:24px;max-width:720px}
+    .awb{font-family:monospace;font-size:34px;font-weight:700;letter-spacing:2px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+    @media print{button{display:none}.label{border-color:#000}}
+  </style>
+</head>
+<body>
+  <button onclick="window.print()">Print</button>
+  <section class="label">
+    <h1>TrackFlow</h1>
+    <div class="awb">{{ shipment.awb }}</div>
+    <p>{{ shipment.service_type }} · {{ shipment.weight_kg }} kg · COD {{ shipment.cod_amount }}</p>
+    <div class="grid">
+      <div><h2>Sender</h2><p>{{ shipment.sender_address }}</p></div>
+      <div><h2>Receiver</h2><p>{{ shipment.receiver_address }}</p></div>
+    </div>
+  </section>
+</body>
+</html>

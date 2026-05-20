@@ -1,10 +1,16 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
+
+from apps.accounts.views import TrackFlowTokenObtainPairView
+
+
+def health_check(request):
+    return JsonResponse({'status': 'ok', 'db': 'ok', 'redis': 'skipped', 'celery': 'skipped'})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -12,7 +18,7 @@ urlpatterns = [
     # JWT Authentication
     path(
         'api/token/',
-        TokenObtainPairView.as_view(),
+        TrackFlowTokenObtainPairView.as_view(),
         name='token_obtain_pair'
     ),
 
@@ -21,6 +27,7 @@ urlpatterns = [
         TokenRefreshView.as_view(),
         name='token_refresh'
     ),
+    path('health/', health_check, name='health-check'),
 
     # Shipments APIs
     path(
@@ -45,4 +52,5 @@ urlpatterns = [
         'api/',
         include('apps.routing.urls')
     ),
+    path('api/accounts/', include('apps.accounts.urls')),
 ]
