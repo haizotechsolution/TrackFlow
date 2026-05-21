@@ -1,11 +1,8 @@
 from rest_framework import serializers
-from .models import *
+from .models import NDR
 
 
-class ReturnSerializer(
-    serializers.ModelSerializer
-):
-
+class NDRSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ReturnRequest
+        model = NDR
         fields = "__all__"

@@ -1,37 +1,8 @@
-from rest_framework import viewsets
-
-from django.shortcuts import render
-
-from .models import *
-
-from .serializers import *
+from rest_framework import generics
+from .models import NDR
+from .serializers import NDRSerializer
 
 
-class ReturnViewSet(
-viewsets.ModelViewSet
-):
-
-    queryset=ReturnRequest.objects.all()
-
-    serializer_class=ReturnSerializer
-
-
-def ndr_page(request):
-
-    returns=ReturnRequest.objects.all()
-
-    return render(
-        request,
-        "returns/ndr_list.html",
-        {
-            "returns":returns
-        }
-    )
-
-
-def ndr_ops_page(request):
-
-    return render(
-        request,
-        "returns/ndr_ops.html"
-    )
+class NDRListCreateView(generics.ListCreateAPIView):
+    queryset = NDR.objects.all()
+    serializer_class = NDRSerializer

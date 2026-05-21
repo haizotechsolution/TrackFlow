@@ -1,32 +1,22 @@
 from django.db import models
-from apps.shipments.models import Shipment
 
 
-class ReturnRequest(models.Model):
+class NDR(models.Model):
+    shipment_awb = models.CharField(max_length=50)
+    reason = models.CharField(max_length=255)
+    attempts = models.IntegerField(default=1)
 
-    STATUS = (
+    ACTIONS = [
+        ("PENDING", "Pending"),
+        ("REATTEMPT", "Reattempt"),
+        ("RTO", "Return To Origin"),
+    ]
 
-        ("NDR", "NDR"),
-
-        ("RTO", "RTO"),
-
-        ("RETURNED", "RETURNED"),
-
+    merchant_action = models.CharField(
+        max_length=20,
+        choices=ACTIONS,
+        default="PENDING"
     )
 
-    shipment = models.ForeignKey(
-        Shipment,
-        on_delete=models.CASCADE
-    )
-
-    reason = models.TextField()
-
-    status = models.CharField(
-        max_length=50,
-        choices=STATUS,
-        default="NDR"
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    def __str__(self):
+        return self.shipment_awb

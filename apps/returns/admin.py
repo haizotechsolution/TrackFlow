@@ -1,5 +1,4 @@
 from django.contrib import admin
+from .models import NDR
 
-from .models import *
-
-admin.site.register(ReturnRequest)
+admin.site.register(NDR)

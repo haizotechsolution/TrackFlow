@@ -1,29 +1,20 @@
 from rest_framework import serializers
-from .models import *
+from .models import Invoice, RateCard, CODRemittance
 
 
-class RateCardSerializer(
-    serializers.ModelSerializer
-):
-
-    class Meta:
-        model = RateCard
-        fields = "__all__"
-
-
-class InvoiceSerializer(
-    serializers.ModelSerializer
-):
-
+class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = "__all__"
 
 
-class CODSerializer(
-    serializers.ModelSerializer
-):
+class RateCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RateCard
+        fields = "__all__"
 
+
+class CODRemittanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = CODRemittance
         fields = "__all__"

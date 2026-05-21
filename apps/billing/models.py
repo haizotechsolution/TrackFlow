@@ -1,92 +1,31 @@
 from django.db import models
-from apps.accounts.models import Merchant
-from apps.shipments.models import Shipment
 
 
 class RateCard(models.Model):
+    merchant_id = models.IntegerField()
+    base_rate = models.DecimalField(max_digits=10, decimal_places=2)
+    per_kg_rate = models.DecimalField(max_digits=10, decimal_places=2)
 
-    merchant = models.ForeignKey(
-        Merchant,
-        on_delete=models.CASCADE
-    )
-
-    service_type = models.CharField(
-        max_length=50
-    )
-
-    base_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2
-    )
-
-    per_kg_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2
-    )
-
-    active = models.BooleanField(
-        default=True
-    )
+    def __str__(self):
+        return f"RateCard-{self.merchant_id}"
 
 
 class Invoice(models.Model):
+    merchant_id = models.IntegerField()
+    invoice_number = models.CharField(max_length=50, unique=True)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    gst_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    grand_total = models.DecimalField(max_digits=12, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    merchant = models.ForeignKey(
-        Merchant,
-        on_delete=models.CASCADE
-    )
-
-    invoice_number = models.CharField(
-        max_length=100,
-        unique=True
-    )
-
-    amount = models.DecimalField(
-        max_digits=12,
-        decimal_places=2
-    )
-
-    gst = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0
-    )
-
-    total = models.DecimalField(
-        max_digits=12,
-        decimal_places=2
-    )
-
-    paid = models.BooleanField(
-        default=False
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    def __str__(self):
+        return self.invoice_number
 
 
 class CODRemittance(models.Model):
+    shipment_awb = models.CharField(max_length=50)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    paid = models.BooleanField(default=False)
 
-    merchant = models.ForeignKey(
-        Merchant,
-        on_delete=models.CASCADE
-    )
-
-    shipment = models.ForeignKey(
-        Shipment,
-        on_delete=models.CASCADE
-    )
-
-    cod_amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2
-    )
-
-    remitted = models.BooleanField(
-        default=False
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    def __str__(self):
+        return self.shipment_awb
