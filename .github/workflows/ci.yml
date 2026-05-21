@@ -27,7 +27,7 @@ jobs:
 
           POSTGRES_USER: postgres
 
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: oracle
 
         ports:
           - 5432:5432
@@ -54,7 +54,7 @@ jobs:
 
       DB_USER: postgres
 
-      DB_PASSWORD: postgres
+      DB_PASSWORD: oracle
 
       DB_HOST: localhost
 
