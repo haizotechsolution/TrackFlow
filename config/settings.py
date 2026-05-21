@@ -196,13 +196,39 @@ TRACKFLOW_ASYNC_LABELS = env.bool('TRACKFLOW_ASYNC_LABELS', default=False)
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='ap-south-1')
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+# Email Configuration
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+EMAIL_HOST = env(
+    "EMAIL_HOST",
+    default="smtp.gmail.com"
+)
+
+EMAIL_PORT = env.int(
+    "EMAIL_PORT",
+    default=587
+)
+
+EMAIL_HOST_USER = env(
+    "EMAIL_HOST_USER",
+    default=""
+)
+
+EMAIL_HOST_PASSWORD = env(
+    "EMAIL_HOST_PASSWORD",
+    default=""
+)
+
+EMAIL_USE_TLS = env.bool(
+    "EMAIL_USE_TLS",
+    default=True
+)
+
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL",
+    default="noreply@trackflow.com"
+)
 
 SMS_API_URL = env('SMS_API_URL')
 SMS_API_KEY = env('SMS_API_KEY')
