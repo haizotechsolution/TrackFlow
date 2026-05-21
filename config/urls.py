@@ -81,3 +81,8 @@ urlpatterns = [
         include('apps.accounts.urls')
     ),
 ]
+
+urlpatterns += [
+    path('api/notifications/', include('apps.notifications.urls')),
+    path('api/partners/', include('apps.partners.urls')),
+]

@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import timedelta
 import os
-import environ
+from environ import Env
 
 # -------------------------------------------------------------------
 # BASE DIRECTORY
@@ -11,12 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -------------------------------------------------------------------
 # ENV SETUP
 # -------------------------------------------------------------------
-env = environ.Env(
+env = Env(
     DEBUG=(bool, False)
 )
 
 # IMPORTANT: load .env correctly
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # -------------------------------------------------------------------
 # SECURITY SETTINGS
@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'apps.routing',
     'apps.billing',
     'apps.returns',
+    'apps.notifications',
+    'apps.partners',
 ]
 
 # -------------------------------------------------------------------
@@ -79,6 +81,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -193,3 +196,19 @@ TRACKFLOW_STORAGE_BACKEND = env('TRACKFLOW_STORAGE_BACKEND', default='local')
 TRACKFLOW_ASYNC_LABELS = env.bool('TRACKFLOW_ASYNC_LABELS', default=False)
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='ap-south-1')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+SMS_API_URL = env('SMS_API_URL')
+SMS_API_KEY = env('SMS_API_KEY')
+SMS_SENDER_ID = env('SMS_SENDER_ID')
+
+WHATSAPP_API_URL = env('WHATSAPP_API_URL')
+WHATSAPP_TOKEN = env('WHATSAPP_TOKEN')
+

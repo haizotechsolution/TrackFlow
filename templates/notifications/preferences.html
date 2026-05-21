@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification Preferences</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 40px;
+        }
+
+        .container {
+            width: 500px;
+            margin: auto;
+        }
+
+        .card {
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h2>Notification Preferences</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <label>
+                <input type="checkbox" name="email_notifications">
+                Email Notifications
+            </label>
+
+            <label>
+                <input type="checkbox" name="sms_notifications">
+                SMS Notifications
+            </label>
+
+            <label>
+                <input type="checkbox" name="whatsapp_notifications">
+                WhatsApp Notifications
+            </label>
+
+            <button type="submit">Save Preferences</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
