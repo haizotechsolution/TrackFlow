@@ -5,7 +5,9 @@ django-environ
 django-filter
 psycopg2-binary
 redis
-celery[redis]
+celery
+redis
 django-fsm
 whitenoise
 pillow
+requests==2.31.0
