@@ -3,6 +3,9 @@ from datetime import timedelta
 import os
 from environ import Env
 
+import sys
+
+
 # -------------------------------------------------------------------
 # BASE DIRECTORY
 # -------------------------------------------------------------------
@@ -264,3 +267,8 @@ WHATSAPP_TOKEN = env(
     "WHATSAPP_TOKEN",
     default=""
 )
+
+# Run Celery tasks synchronously during tests
+if 'test' in sys.argv:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True

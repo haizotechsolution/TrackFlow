@@ -12,16 +12,43 @@ from .tasks import (
 
 @receiver(post_save, sender=Shipment)
 def shipment_notification_handler(sender, instance, created, **kwargs):
+
+    # Skip notifications while creating
     if created:
-        message = f'Shipment {instance.awb} booked successfully.'
+        return
 
-        send_sms_task.delay(instance.receiver.phone, message)
+    message = f"Shipment {instance.awb} status updated to {instance.status}"
 
-        send_whatsapp_task.delay(instance.receiver.phone, message)
+    # Receiver details
+    receiver = instance.receiver_address
 
-        if instance.merchant.user.email:
+    email = None
+    phone_number = None
+
+    if receiver:
+        email = getattr(receiver, "email", None)
+        phone_number = getattr(receiver, "phone", None)
+
+    # EMAIL
+    if email:
+        try:
             send_email_task.delay(
-                'Shipment Booked',
-                message,
-                [instance.merchant.user.email]
+                email,
+                "Shipment Update",
+                message
             )
+        except Exception as e:
+            print(f"Email task failed: {e}")
+
+    # SMS + WHATSAPP
+    if phone_number:
+
+        try:
+            send_sms_task.delay(phone_number, message)
+        except Exception as e:
+            print(f"SMS task failed: {e}")
+
+        try:
+            send_whatsapp_task.delay(phone_number, message)
+        except Exception as e:
+            print(f"WhatsApp task failed: {e}")
