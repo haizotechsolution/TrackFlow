@@ -21,9 +21,8 @@ Env.read_env(os.path.join(BASE_DIR, ".env"))
 # -------------------------------------------------------------------
 # SECURITY SETTINGS
 # -------------------------------------------------------------------
-SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG")
-
+SECRET_KEY = env("SECRET_KEY", default="django-insecure-dev-key")
+DEBUG = env.bool("DEBUG", default=True)
 ALLOWED_HOSTS = []
 
 # -------------------------------------------------------------------
@@ -201,8 +200,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 SMS_API_URL = env('SMS_API_URL')
