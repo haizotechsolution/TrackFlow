@@ -196,7 +196,9 @@ TRACKFLOW_ASYNC_LABELS = env.bool('TRACKFLOW_ASYNC_LABELS', default=False)
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='')
 AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='ap-south-1')
 
+# =========================================
 # Email Configuration
+# =========================================
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
@@ -230,10 +232,35 @@ DEFAULT_FROM_EMAIL = env(
     default="noreply@trackflow.com"
 )
 
-SMS_API_URL = env('SMS_API_URL')
-SMS_API_KEY = env('SMS_API_KEY')
-SMS_SENDER_ID = env('SMS_SENDER_ID')
+# =========================================
+# SMS Configuration
+# =========================================
 
-WHATSAPP_API_URL = env('WHATSAPP_API_URL')
-WHATSAPP_TOKEN = env('WHATSAPP_TOKEN')
+SMS_API_URL = env(
+    "SMS_API_URL",
+    default=""
+)
 
+SMS_API_KEY = env(
+    "SMS_API_KEY",
+    default=""
+)
+
+SMS_SENDER_ID = env(
+    "SMS_SENDER_ID",
+    default=""
+)
+
+# =========================================
+# WhatsApp Configuration
+# =========================================
+
+WHATSAPP_API_URL = env(
+    "WHATSAPP_API_URL",
+    default=""
+)
+
+WHATSAPP_TOKEN = env(
+    "WHATSAPP_TOKEN",
+    default=""
+)
