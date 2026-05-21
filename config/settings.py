@@ -106,18 +106,28 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # ==========================================
-# DATABASE (POSTGRESQL)
+# DATABASE
 # ==========================================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DB_NAME", default="trackflow_db"),
-        "USER": env("DB_USER", default="postgres"),
-        "PASSWORD": env("DB_PASSWORD", default="oracle"),
-        "HOST": env("DB_HOST", default="localhost"),
-        "PORT": env("DB_PORT", default="5432"),
+DB_ENGINE = env("DB_ENGINE", default="django.db.backends.postgresql")
+
+if DB_ENGINE == "django.db.backends.sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": DB_ENGINE,
+            "NAME": env("DB_NAME", default=str(BASE_DIR / "db.sqlite3")),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": DB_ENGINE,
+            "NAME": env("DB_NAME", default="trackflow_db"),
+            "USER": env("DB_USER", default="postgres"),
+            "PASSWORD": env("DB_PASSWORD", default="oracle"),
+            "HOST": env("DB_HOST", default="localhost"),
+            "PORT": env("DB_PORT", default="5432"),
+        }
+    }
 
 # ==========================================
 # PASSWORD VALIDATION
@@ -193,14 +203,14 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 # ==========================================
-# REDIS / CHANNELS
+# CHANNELS
 # ==========================================
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
+        "BACKEND": env(
+            "CHANNEL_LAYER_BACKEND",
+            default="channels.layers.InMemoryChannelLayer",
+        ),
     },
 }
 
@@ -209,12 +219,12 @@ CHANNEL_LAYERS = {
 # ==========================================
 CELERY_BROKER_URL = env(
     "CELERY_BROKER_URL",
-    default="redis://127.0.0.1:6379/0"
+    default="memory://"
 )
 
 CELERY_RESULT_BACKEND = env(
     "CELERY_RESULT_BACKEND",
-    default="redis://127.0.0.1:6379/0"
+    default="cache+memory://"
 )
 
 # ==========================================
@@ -255,6 +265,12 @@ DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL",
     default="noreply@trackflow.com"
 )
+
+SMS_API_URL = env("SMS_API_URL", default="")
+SMS_API_KEY = env("SMS_API_KEY", default="")
+SMS_SENDER_ID = env("SMS_SENDER_ID", default="TRACKFLOW")
+WHATSAPP_API_URL = env("WHATSAPP_API_URL", default="")
+WHATSAPP_TOKEN = env("WHATSAPP_TOKEN", default="")
 
 # ==========================================
 # TEST SETTINGS

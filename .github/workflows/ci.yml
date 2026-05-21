@@ -15,54 +15,19 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    services:
-
-      postgres:
-
-        image: postgres:16
-
-        env:
-
-          POSTGRES_DB: trackflow_db
-
-          POSTGRES_USER: postgres
-
-          POSTGRES_PASSWORD: oracle
-
-        ports:
-          - 5432:5432
-
-        options: >-
-
-          --health-cmd pg_isready
-
-          --health-interval 10s
-
-          --health-timeout 5s
-
-          --health-retries 5
-
     env:
 
       SECRET_KEY: django-insecure-ci-secret-key
 
       DEBUG: "True"
 
-      DB_ENGINE: django.db.backends.postgresql
+      DB_ENGINE: django.db.backends.sqlite3
 
-      DB_NAME: trackflow_db
+      DB_NAME: db.sqlite3
 
-      DB_USER: postgres
+      CELERY_BROKER_URL: memory://
 
-      DB_PASSWORD: oracle
-
-      DB_HOST: localhost
-
-      DB_PORT: 5432
-
-      CELERY_BROKER_URL: redis://127.0.0.1:6379/0
-
-      CELERY_RESULT_BACKEND: redis://127.0.0.1:6379/0
+      CELERY_RESULT_BACKEND: cache+memory://
 
       TRACKFLOW_ASYNC_LABELS: "False"
 
@@ -92,13 +57,11 @@ jobs:
 
           pip install -r requirements.txt
 
-          pip install psycopg2-binary
-
       - name: Run migrations
 
         run: |
 
-          python manage.py makemigrations
+          python manage.py makemigrations --check --dry-run
 
           python manage.py migrate
 

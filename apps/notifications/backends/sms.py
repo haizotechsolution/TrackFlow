@@ -3,6 +3,9 @@ from django.conf import settings
 
 
 def send_sms(phone, message):
+    if not settings.SMS_API_URL or not settings.SMS_API_KEY:
+        return {'status': 'skipped', 'reason': 'SMS provider is not configured.'}
+
     payload = {
         'apikey': settings.SMS_API_KEY,
         'number': phone,
