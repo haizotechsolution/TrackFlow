@@ -3,6 +3,7 @@ djangorestframework
 djangorestframework-simplejwt
 django-environ
 django-filter
+channels
 psycopg2-binary
 redis
 celery
