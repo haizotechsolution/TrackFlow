@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "apps.routing",
     "apps.billing",
     "apps.returns",
+    "apps.analytics",
     "apps.notifications",
     "apps.partners",
 ]

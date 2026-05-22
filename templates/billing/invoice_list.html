@@ -1,36 +1,6 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
 
-<head>
-
-<title>Invoices</title>
-
-<style>
-
-body{
-font-family:Arial;
-background:#eef2ff;
-padding:40px;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-}
-
-li{
-padding:10px;
-margin:10px;
-background:#f3f4f6;
-}
-
-</style>
-
-</head>
-
-<body>
-
+{% block content %}
 <div class="card">
 
 <h1>Invoice List</h1>
@@ -49,13 +19,7 @@ Invoice :
 
 Amount :
 
-{{ i.total }}
-
-|
-
-Paid :
-
-{{ i.paid }}
+{{ i.total_amount }}
 
 </li>
 
@@ -68,7 +32,4 @@ Paid :
 </ul>
 
 </div>
-
-</body>
-
-</html>
+{% endblock %}

@@ -8,11 +8,12 @@ class DelhiveryAdapter(BaseCarrierAdapter):
         self.carrier = carrier
 
     def create_shipment(self, shipment):
+        receiver = shipment.receiver_address
         payload = {
             'awb': shipment.awb,
-            'name': shipment.receiver.name,
-            'phone': shipment.receiver.phone,
-            'address': shipment.receiver.address_line1,
+            'name': receiver.name,
+            'phone': receiver.phone,
+            'address': receiver.address_line_1,
         }
 
         response = requests.post(

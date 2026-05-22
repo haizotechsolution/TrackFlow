@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    tracking_page,
     TrackingEventListCreateView,
     TrackingLocationListCreateView,
     ShipmentTrackingTimelineView,
@@ -8,6 +9,11 @@ from .views import (
 )
 
 urlpatterns = [
+    path(
+        'page/',
+        tracking_page,
+        name='tracking-page',
+    ),
 
     path(
         'events/',
@@ -22,13 +28,13 @@ urlpatterns = [
     ),
 
     path(
-    'timeline/<str:tracking_number>/',
+    'timeline/<str:awb>/',
     ShipmentTrackingTimelineView.as_view(),
     name='tracking-timeline',
     ),
 
     path(
-    'latest/<str:tracking_number>/',
+    'latest/<str:awb>/',
     LatestShipmentTrackingView.as_view(),
     name='latest-tracking',
     ),

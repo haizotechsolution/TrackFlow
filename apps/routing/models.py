@@ -42,4 +42,4 @@ class Route(models.Model):
 
     def __str__(self):
 
-        return f"{self.shipment.tracking_number} Route"
+        return f"{self.shipment.awb} Route"

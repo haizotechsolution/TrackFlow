@@ -8,17 +8,13 @@
 
 <div class="row">
 
-    {% include 'components/stats_card.html'
-    with title='Total Shipments' value=1200 %}
+    {% include 'components/stats_card.html' with title='Total Shipments' value=total_shipments %}
 
-    {% include 'components/stats_card.html'
-    with title='Delivered' value=980 %}
+    {% include 'components/stats_card.html' with title='Delivered' value=delivered_shipments %}
 
-    {% include 'components/stats_card.html'
-    with title='Failed' value=120 %}
+    {% include 'components/stats_card.html' with title='Failed' value=failed_shipments %}
 
-    {% include 'components/stats_card.html'
-    with title='Revenue' value='₹50,000' %}
+    {% include 'components/stats_card.html' with title='Revenue' value=total_revenue %}
 
 </div>
 
@@ -47,7 +43,11 @@ new Chart(ctx, {
         datasets: [{
             label: 'Shipments',
 
-            data: [980, 120, 50]
+            data: [
+                {{ delivered_shipments }},
+                {{ failed_shipments }},
+                {{ rto_shipments }}
+            ]
         }]
     }
 });

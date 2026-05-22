@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404, render
 from rest_framework import generics
 
 from .models import TrackingEvent, TrackingLocation
@@ -9,6 +10,15 @@ from .serializers import (
 from rest_framework.permissions import (
     IsAuthenticated
 )
+
+
+def tracking_page(request):
+    events = (
+        TrackingEvent.objects
+        .select_related('shipment')
+        .order_by('-event_time')[:50]
+    )
+    return render(request, 'tracking/tracking_list.html', {'events': events})
 
 
 class TrackingEventListCreateView(
@@ -66,13 +76,9 @@ class ShipmentTrackingTimelineView(
     serializer_class = TrackingEventSerializer
 
     def get_queryset(self):
-
-        tracking_number = self.kwargs.get(
-            'tracking_number'
-        )
-
+        awb = self.kwargs.get('awb')
         return TrackingEvent.objects.filter(
-            shipment__tracking_number=tracking_number
+            shipment__awb=awb
         ).order_by('-event_time')
 
 
@@ -83,11 +89,8 @@ class LatestShipmentTrackingView(
     serializer_class = TrackingEventSerializer
 
     def get_object(self):
-
-        tracking_number = self.kwargs.get(
-            'tracking_number'
+        awb = self.kwargs.get('awb')
+        return get_object_or_404(
+            TrackingEvent.objects.order_by('-event_time'),
+            shipment__awb=awb,
         )
-
-        return TrackingEvent.objects.filter(
-            shipment__tracking_number=tracking_number
-        ).order_by('-event_time').first()

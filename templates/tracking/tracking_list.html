@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="container-fluid p-0">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Tracking</h1>
+    <a class="btn btn-primary" href="{% url 'shipment-list-page' %}">View Shipments</a>
+  </div>
+
+  <div class="table-responsive bg-white rounded shadow-sm">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>AWB</th>
+          <th>Status</th>
+          <th>Location</th>
+          <th>Event Time</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td>
+            <a href="{% url 'shipment-detail-page' event.shipment.awb %}">
+              {{ event.shipment.awb }}
+            </a>
+          </td>
+          <td><span class="badge text-bg-primary">{{ event.status }}</span></td>
+          <td>{{ event.location|default:'-' }}</td>
+          <td>{{ event.event_time }}</td>
+          <td>{{ event.description|default:'-' }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">
+            No tracking events yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+{% endblock %}

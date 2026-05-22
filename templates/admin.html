@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between bg-white rounded shadow-sm p-4">
+                <div>
+                    <h1 class="h3 mb-1">Admin Dashboard</h1>
+                    <p class="text-muted mb-0">
+                        {% if request.user.is_authenticated %}
+                            Welcome back, {{ request.user.get_full_name|default:request.user.email }}.
+                        {% else %}
+                            Welcome to TrackFlow.
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <a href="{% url 'admin:index' %}" class="btn btn-primary">Go to Django Admin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <h5 class="mb-3">Shipments</h5>
+                <p class="mb-0 text-muted">View and manage shipment records.</p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <h5 class="mb-3">Tracking</h5>
+                <p class="mb-0 text-muted">Monitor live tracking updates.</p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <h5 class="mb-3">Billing</h5>
+                <p class="mb-0 text-muted">Review invoices and remittances.</p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <h5 class="mb-3">Analytics</h5>
+                <p class="mb-0 text-muted">Analyze platform performance.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="stat-card">
+                <h5 class="mb-3">Quick Actions</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'shipment-create-page' %}" class="btn btn-outline-primary w-100">Create Shipment</a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'merchant_dashboard' %}" class="btn btn-outline-secondary w-100">View Reports</a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'admin:index' %}" class="btn btn-outline-success w-100">Manage Users</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

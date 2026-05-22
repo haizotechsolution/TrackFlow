@@ -1,31 +1,32 @@
 from django.db import models
 
-# Create your models here.
+
 class TrackingEvent(models.Model):
-        shipment = models.ForeignKey(
+    shipment = models.ForeignKey(
         'shipments.Shipment',
         on_delete=models.CASCADE,
         related_name='tracking_events'
     )
 
-        status = models.CharField(max_length=100)
-        
-        description = models.TextField(blank=True)
+    status = models.CharField(max_length=100)
 
-        location = models.CharField(
+    description = models.TextField(blank=True)
+
+    location = models.CharField(
         max_length=255,
         blank=True,
         null=True
     )
-        event_time = models.DateTimeField(auto_now_add=True)
+    event_time = models.DateTimeField(auto_now_add=True)
 
-        created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-        class Meta:
-            ordering = ['-event_time']
+    class Meta:
+        ordering = ['-event_time']
 
-        def __str__(self):
-            return f"{self.shipment.awb_number} - {self.status}"
+    def __str__(self):
+        return f"{self.shipment.awb} - {self.status}"
+
 
 class TrackingLocation(models.Model):
     shipment = models.ForeignKey(
@@ -50,5 +51,5 @@ class TrackingLocation(models.Model):
         ordering = ['-recorded_at']
 
     def __str__(self):
-        return f"{self.shipment.awb_number} Location"
+        return f"{self.shipment.awb} Location"
 

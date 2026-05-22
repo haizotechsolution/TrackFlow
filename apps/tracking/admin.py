@@ -12,7 +12,7 @@ class TrackingEventAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        'shipment__awb_number',
+        'shipment__awb',
         'status',
         'location',
     )
@@ -36,7 +36,7 @@ class TrackingLocationAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        'shipment__awb_number',
+        'shipment__awb',
     )
 
     list_filter = (

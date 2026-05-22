@@ -33,9 +33,9 @@ def shipment_notification_handler(sender, instance, created, **kwargs):
     if email:
         try:
             send_email_task.delay(
-                email,
                 "Shipment Update",
-                message
+                message,
+                [email],
             )
         except Exception as e:
             print(f"Email task failed: {e}")

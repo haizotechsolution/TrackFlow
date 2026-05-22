@@ -14,9 +14,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r'shipments', ShipmentViewSet)
 
-urlpatterns = router.urls
-
-urlpatterns += [
+urlpatterns = [
     path('shipments/bulk/', BulkShipmentCreateView.as_view(), name='shipment-bulk-create'),
     path('shipments/page/', shipment_list_page, name='shipment-list-page'),
     path('shipments/page/new/', shipment_create_page, name='shipment-create-page'),
@@ -24,3 +22,5 @@ urlpatterns += [
     path('shipments/page/<str:awb>/', shipment_detail_page, name='shipment-detail-page'),
     path('shipments/page/<str:awb>/label/', shipment_label_page, name='shipment-label-page'),
 ]
+
+urlpatterns += router.urls
