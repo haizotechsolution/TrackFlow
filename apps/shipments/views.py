@@ -1,5 +1,5 @@
 from django.http import FileResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -68,6 +68,50 @@ def shipment_detail_page(request, awb):
 
 
 def shipment_create_page(request):
+    if request.method == 'POST':
+        data = {
+            'sender_address': {
+                'name': request.POST.get('sender_name', '').strip(),
+                'phone': request.POST.get('sender_phone', '').strip(),
+                'address_line_1': request.POST.get('sender_address_line_1', '').strip(),
+                'address_line_2': request.POST.get('sender_address_line_2', '').strip(),
+                'city': request.POST.get('sender_city', '').strip(),
+                'state': request.POST.get('sender_state', '').strip(),
+                'pincode': request.POST.get('sender_pincode', '').strip(),
+                'landmark': request.POST.get('sender_landmark', '').strip(),
+            },
+            'receiver_address': {
+                'name': request.POST.get('receiver_name', '').strip(),
+                'phone': request.POST.get('receiver_phone', '').strip(),
+                'address_line_1': request.POST.get('receiver_address_line_1', '').strip(),
+                'address_line_2': request.POST.get('receiver_address_line_2', '').strip(),
+                'city': request.POST.get('receiver_city', '').strip(),
+                'state': request.POST.get('receiver_state', '').strip(),
+                'pincode': request.POST.get('receiver_pincode', '').strip(),
+                'landmark': request.POST.get('receiver_landmark', '').strip(),
+            },
+            'weight_kg': request.POST.get('weight_kg', '').strip(),
+            'length_cm': request.POST.get('length_cm', '0').strip() or '0',
+            'width_cm': request.POST.get('width_cm', '0').strip() or '0',
+            'height_cm': request.POST.get('height_cm', '0').strip() or '0',
+            'service_type': request.POST.get('service_type', Shipment.SERVICE_STANDARD),
+            'cod_amount': request.POST.get('cod_amount', '0').strip() or '0',
+            'is_fragile': request.POST.get('is_fragile') == 'on',
+            'is_dangerous': request.POST.get('is_dangerous') == 'on',
+            'is_reverse': request.POST.get('is_reverse') == 'on',
+            'original_awb': request.POST.get('original_awb', '').strip(),
+        }
+        serializer = ShipmentSerializer(data=data, context={'request': request})
+        if serializer.is_valid():
+            shipment = serializer.save()
+            return redirect('shipment-detail-page', awb=shipment.awb)
+        return render(
+            request,
+            'shipments/shipment_create.html',
+            {'errors': serializer.errors, 'form_data': request.POST},
+            status=400
+        )
+
     return render(request, 'shipments/shipment_create.html')
 
 
