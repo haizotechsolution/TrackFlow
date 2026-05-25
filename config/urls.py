@@ -1,13 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from apps.accounts.views import TrackFlowTokenObtainPairView
+from apps.accounts.views import TrackFlowTokenObtainPairView, home_page
 
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="admin.html"), name="home"),
+    path("", home_page, name="home"),
     path("billing/", include("apps.billing.urls")),
     path("admin/", admin.site.urls),
     path("api/token/", TrackFlowTokenObtainPairView.as_view(), name="token-obtain-pair"),

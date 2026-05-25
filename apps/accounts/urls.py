@@ -10,6 +10,7 @@ from .views import (
     login_page,
     register_page,
     settings_page,
+    web_logout,
 )
 
 router = DefaultRouter()
@@ -23,6 +24,7 @@ urlpatterns = [
     path('page/login/', login_page, name='account-login-page'),
     path('page/register/', register_page, name='account-register-page'),
     path('page/settings/', settings_page, name='account-settings-page'),
+    path('page/logout/', web_logout, name='account-web-logout'),
 ]
 
 urlpatterns += router.urls

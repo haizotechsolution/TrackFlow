@@ -29,6 +29,15 @@ class AccountAPITests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('access', response.data)
         self.assertEqual(response.data['profile']['merchant']['company_name'], 'Acme Logistics')
+        self.assertEqual(response.data['dashboard_url'], '/api/analytics/dashboard/')
+        self.assertEqual(int(self.client.session['_auth_user_id']), self.user.id)
+
+    def test_home_redirects_logged_in_merchant_to_merchant_dashboard(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get('/')
+
+        self.assertRedirects(response, '/api/analytics/dashboard/')
 
     def test_authenticated_user_can_register_webhook(self):
         self.client.force_authenticate(user=self.user)

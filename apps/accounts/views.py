@@ -4,7 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth import logout as django_logout
+from django.contrib.auth import login as django_login
 from django.shortcuts import render
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from .models import WebhookEndpoint
 from .serializers import (
@@ -17,6 +22,15 @@ from .serializers import (
 
 class TrackFlowTokenObtainPairView(TokenObtainPairView):
     serializer_class = TrackFlowTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.user
+        django_login(request._request, user)
+        data = serializer.validated_data
+        data["dashboard_url"] = get_dashboard_url(user)
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class RegisterView(APIView):
@@ -105,3 +119,24 @@ def register_page(request):
 
 def settings_page(request):
     return render(request, 'accounts/settings.html')
+
+
+@require_POST
+def web_logout(request):
+    django_logout(request)
+    return redirect('account-login-page')
+
+
+def get_dashboard_url(user):
+    if user.is_staff or getattr(user, 'is_ops', False):
+        return reverse('home')
+    return reverse('merchant_dashboard')
+
+
+def home_page(request):
+    if request.user.is_authenticated and not (
+        request.user.is_staff or getattr(request.user, 'is_ops', False)
+    ):
+        return redirect('merchant_dashboard')
+
+    return render(request, 'admin.html')
