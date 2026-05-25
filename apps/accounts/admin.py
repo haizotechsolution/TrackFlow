@@ -12,8 +12,8 @@ class MerchantInline(admin.StackedInline):
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'username', 'phone', 'is_merchant', 'is_ops', 'is_staff')
-    list_filter = ('is_merchant', 'is_ops', 'is_staff', 'is_active')
+    list_display = ('email', 'username', 'phone', 'role', 'is_merchant', 'is_ops', 'is_staff')
+    list_filter = ('role', 'is_merchant', 'is_ops', 'is_staff', 'is_active')
     search_fields = ('email', 'username', 'phone')
     inlines = [MerchantInline]
 

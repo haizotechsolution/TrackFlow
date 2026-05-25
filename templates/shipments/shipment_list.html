@@ -9,36 +9,56 @@
         <a class="btn btn-primary" href="{% url 'shipment-create-page' %}">New Shipment</a>
       </div>
     </div>
+    <form class="row g-2 align-items-end bg-white border rounded p-3 mb-3">
+      <div class="col-md-3">
+        <label class="form-label" for="shipment-search">Search</label>
+        <input id="shipment-search" class="form-control" name="q" value="{{ filters.q }}" placeholder="AWB number">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="shipment-status">Status</label>
+        <select id="shipment-status" class="form-select" name="status">
+          <option value="">All</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="date-from">From</label>
+        <input id="date-from" class="form-control" type="date" name="date_from" value="{{ filters.date_from }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="date-to">To</label>
+        <input id="date-to" class="form-control" type="date" name="date_to" value="{{ filters.date_to }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label" for="city">City</label>
+        <input id="city" class="form-control" name="city" value="{{ filters.city }}" placeholder="Receiver city">
+      </div>
+      <div class="col-md-1 d-grid">
+        <button class="btn btn-secondary" type="submit">Apply</button>
+      </div>
+    </form>
     <div class="row">
-      <aside class="col-lg-3 mb-3">
-        <form class="card card-body">
-          <select class="form-select mb-2" name="status">
-            <option>Status</option>
-            <option>BOOKED</option>
-            <option>IN_TRANSIT</option>
-            <option>DELIVERED</option>
-          </select>
-          <input class="form-control mb-2" type="date" name="date_from">
-          <input class="form-control mb-2" name="city" placeholder="City">
-          <button class="btn btn-secondary" type="submit">Filter</button>
-        </form>
-      </aside>
-      <section class="col-lg-9">
+      <section class="col-12">
         <div class="table-responsive">
           <table class="table table-hover align-middle">
-            <thead><tr><th>AWB</th><th>Receiver</th><th>Status</th><th>Date</th><th>Freight</th><th>COD</th></tr></thead>
+            <thead><tr><th>AWB</th><th>Sender</th><th>Receiver</th><th>Status</th><th>Date</th><th>Weight</th><th>Freight</th><th>COD</th><th></th></tr></thead>
             <tbody>
               {% for shipment in shipments %}
               <tr>
-                <td><a href="{% url 'shipment-detail-page' shipment.awb %}">{{ shipment.awb }}</a></td>
+                <td class="fw-semibold">{{ shipment.awb }}</td>
+                <td>{{ shipment.sender_address.name }}</td>
                 <td>{{ shipment.receiver_address.name }}</td>
-                <td><span class="badge text-bg-primary">{{ shipment.status }}</span></td>
-                <td>{{ shipment.created_at }}</td>
+                <td><span class="badge {% if shipment.status == 'DELIVERED' %}text-bg-success{% elif shipment.status == 'FAILED' or shipment.status == 'RTO' %}text-bg-danger{% elif shipment.status == 'IN_TRANSIT' or shipment.status == 'OUT_FOR_DELIVERY' %}text-bg-info{% else %}text-bg-secondary{% endif %}">{{ shipment.get_status_display }}</span></td>
+                <td>{{ shipment.created_at|date:"d M Y, h:i A" }}</td>
+                <td>{{ shipment.weight_kg }} kg</td>
                 <td>{{ shipment.freight_amount }}</td>
                 <td>{{ shipment.cod_amount }}</td>
+                <td><a class="btn btn-sm btn-outline-primary" href="{% url 'shipment-detail-page' shipment.awb %}">View</a></td>
               </tr>
               {% empty %}
-              <tr><td colspan="6" class="text-center text-muted">No shipments yet.</td></tr>
+              <tr><td colspan="9"><div class="empty-state">No shipments match your filters.</div></td></tr>
               {% endfor %}
             </tbody>
           </table>

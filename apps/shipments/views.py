@@ -1,8 +1,9 @@
 from django.http import FileResponse
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -22,8 +23,6 @@ class ShipmentViewSet(viewsets.ModelViewSet):
     ordering_fields = ['created_at', 'updated_at', 'status']
 
     def get_permissions(self):
-        if self.action == 'retrieve':
-            return [AllowAny()]
         return super().get_permissions()
 
     def get_queryset(self):
@@ -57,16 +56,59 @@ class BulkShipmentCreateView(APIView):
         return Response(bulk_create_shipments_from_csv(csv_file, request.user))
 
 
+def scoped_shipments_for_user(user):
+    queryset = Shipment.objects.select_related(
+        'sender_address',
+        'receiver_address',
+        'merchant',
+    ).prefetch_related('items')
+    if user.is_staff or getattr(user, 'is_ops', False):
+        return queryset
+    return queryset.filter(merchant=user)
+
+
+@login_required(login_url='account-login-page')
 def shipment_list_page(request):
-    shipments = Shipment.objects.select_related('receiver_address').order_by('-created_at')[:50]
-    return render(request, 'shipments/shipment_list.html', {'shipments': shipments})
+    shipments = scoped_shipments_for_user(request.user)
+    search = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    city = request.GET.get('city', '').strip()
+    date_from = request.GET.get('date_from', '').strip()
+    date_to = request.GET.get('date_to', '').strip()
+
+    if search:
+        shipments = shipments.filter(awb__icontains=search)
+    if status:
+        shipments = shipments.filter(status=status)
+    if city:
+        shipments = shipments.filter(receiver_address__city__icontains=city)
+    if date_from:
+        shipments = shipments.filter(created_at__date__gte=date_from)
+    if date_to:
+        shipments = shipments.filter(created_at__date__lte=date_to)
+
+    shipments = shipments.order_by('-created_at')[:100]
+    return render(
+        request,
+        'shipments/shipment_list.html',
+        {
+            'shipments': shipments,
+            'status_choices': Shipment.STATUS_CHOICES,
+            'filters': request.GET,
+        },
+    )
 
 
+@login_required(login_url='account-login-page')
 def shipment_detail_page(request, awb):
-    shipment = get_object_or_404(Shipment.objects.select_related('sender_address', 'receiver_address'), awb=awb)
+    shipment = get_object_or_404(
+        scoped_shipments_for_user(request.user).prefetch_related('tracking_events'),
+        awb=awb,
+    )
     return render(request, 'shipments/shipment_detail.html', {'shipment': shipment})
 
 
+@login_required(login_url='account-login-page')
 def shipment_create_page(request):
     if request.method == 'POST':
         data = {
@@ -115,10 +157,12 @@ def shipment_create_page(request):
     return render(request, 'shipments/shipment_create.html')
 
 
+@login_required(login_url='account-login-page')
 def bulk_upload_page(request):
     return render(request, 'shipments/bulk_upload.html')
 
 
+@login_required(login_url='account-login-page')
 def shipment_label_page(request, awb):
-    shipment = get_object_or_404(Shipment.objects.select_related('sender_address', 'receiver_address'), awb=awb)
+    shipment = get_object_or_404(scoped_shipments_for_user(request.user), awb=awb)
     return render(request, 'shipments/label.html', {'shipment': shipment})

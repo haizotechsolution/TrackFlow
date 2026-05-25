@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -65,7 +67,11 @@ class RegisterSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, min_length=8)
     username = serializers.CharField(required=False, allow_blank=True)
     phone = serializers.CharField(required=False, allow_blank=True)
-    company_name = serializers.CharField(max_length=255)
+    role = serializers.ChoiceField(
+        choices=[User.ROLE_MERCHANT, User.ROLE_CUSTOMER],
+        default=User.ROLE_MERCHANT,
+    )
+    company_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
     gstin = serializers.CharField(
         required=False,
         allow_blank=True,
@@ -74,10 +80,18 @@ class RegisterSerializer(serializers.Serializer):
     address = serializers.JSONField(required=False)
 
     def validate_email(self, value):
+        value = value.lower().strip()
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(
                 "A user with this email already exists."
             )
+        return value
+
+    def validate_password(self, value):
+        try:
+            validate_password(value)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError(list(exc.messages))
         return value
 
     def validate_gstin(self, value):
@@ -89,11 +103,16 @@ class RegisterSerializer(serializers.Serializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        role = validated_data.pop("role", User.ROLE_MERCHANT)
         merchant_data = {
-            "company_name": validated_data.pop("company_name"),
+            "company_name": validated_data.pop("company_name", ""),
             "gstin": validated_data.pop("gstin", ""),
             "address": validated_data.pop("address", {}),
         }
+        if role == User.ROLE_MERCHANT and not merchant_data["company_name"]:
+            raise serializers.ValidationError({
+                "company_name": "Company name is required for merchant accounts."
+            })
 
         password = validated_data.pop("password")
 
@@ -103,19 +122,19 @@ class RegisterSerializer(serializers.Serializer):
         ) or validated_data["email"]
 
         validated_data["username"] = username
+        validated_data["role"] = role
+        validated_data["is_merchant"] = role == User.ROLE_MERCHANT
 
-        # FIXED: no duplicate email
         user = User.objects.create_user(
+            password=password,
             **validated_data
         )
 
-        user.set_password(password)
-        user.save()
-
-        Merchant.objects.create(
-            user=user,
-            **merchant_data
-        )
+        if role == User.ROLE_MERCHANT:
+            Merchant.objects.create(
+                user=user,
+                **merchant_data
+            )
 
         return user
 
@@ -133,15 +152,19 @@ class ProfileSerializer(serializers.ModelSerializer):
             "email",
             "username",
             "phone",
+            "role",
             "is_merchant",
             "is_ops",
+            "is_customer",
             "merchant",
         ]
         read_only_fields = [
             "id",
             "email",
+            "role",
             "is_merchant",
             "is_ops",
+            "is_customer",
         ]
 
     def update(self, instance, validated_data):

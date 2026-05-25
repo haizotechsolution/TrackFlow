@@ -5,8 +5,18 @@ import uuid
 
 
 class CustomUser(AbstractUser):
+    ROLE_ADMIN = 'ADMIN'
+    ROLE_MERCHANT = 'MERCHANT'
+    ROLE_CUSTOMER = 'CUSTOMER'
+    ROLE_CHOICES = [
+        (ROLE_ADMIN, 'Admin'),
+        (ROLE_MERCHANT, 'Merchant'),
+        (ROLE_CUSTOMER, 'Customer'),
+    ]
+
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15, blank=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_MERCHANT)
     is_merchant = models.BooleanField(default=True)
     is_ops = models.BooleanField(default=False)
 
@@ -27,6 +37,10 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @property
+    def is_customer(self):
+        return self.role == self.ROLE_CUSTOMER
 
 
 class Merchant(models.Model):

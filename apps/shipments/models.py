@@ -65,7 +65,7 @@ class Shipment(models.Model):
         (SERVICE_SAME_DAY, 'Same Day'),
     ]
 
-    awb = models.CharField(max_length=14, unique=True, blank=True)
+    awb = models.CharField(max_length=14, unique=True, blank=True, db_index=True)
     merchant = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -98,7 +98,7 @@ class Shipment(models.Model):
     is_dangerous = models.BooleanField(default=False)
     is_reverse = models.BooleanField(default=False)
     original_awb = models.CharField(max_length=14, blank=True)
-    status = FSMField(max_length=50, choices=STATUS_CHOICES, default=BOOKED)
+    status = FSMField(max_length=50, choices=STATUS_CHOICES, default=BOOKED, db_index=True)
     label_file = models.FileField(upload_to='labels/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -115,6 +115,12 @@ class Shipment(models.Model):
 
     def __str__(self):
         return self.awb
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['merchant', 'created_at']),
+            models.Index(fields=['merchant', 'status']),
+        ]
 
     @transition(
         field=status,

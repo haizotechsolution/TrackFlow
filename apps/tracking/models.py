@@ -23,6 +23,9 @@ class TrackingEvent(models.Model):
 
     class Meta:
         ordering = ['-event_time']
+        indexes = [
+            models.Index(fields=['shipment', 'event_time']),
+        ]
 
     def __str__(self):
         return f"{self.shipment.awb} - {self.status}"
@@ -49,6 +52,9 @@ class TrackingLocation(models.Model):
 
     class Meta:
         ordering = ['-recorded_at']
+        indexes = [
+            models.Index(fields=['shipment', 'recorded_at']),
+        ]
 
     def __str__(self):
         return f"{self.shipment.awb} Location"

@@ -15,8 +15,15 @@
             <h1 class="h4 mb-3">Create merchant account</h1>
             <div id="result" class="alert d-none"></div>
             <form id="register-form">
+              {% csrf_token %}
               <div class="row g-3">
-                <div class="col-12"><input class="form-control" name="company_name" placeholder="Company name" required></div>
+                <div class="col-12">
+                  <select class="form-select" name="role" aria-label="Account role">
+                    <option value="MERCHANT" selected>Merchant</option>
+                    <option value="CUSTOMER">Customer</option>
+                  </select>
+                </div>
+                <div class="col-12"><input class="form-control" name="company_name" placeholder="Company name"></div>
                 <div class="col-md-6"><input class="form-control" name="email" type="email" placeholder="Email" required></div>
                 <div class="col-md-6"><input class="form-control" name="phone" placeholder="Phone"></div>
                 <div class="col-md-6"><input class="form-control" name="gstin" placeholder="GSTIN"></div>
@@ -37,7 +44,10 @@
       payload.address = {};
       const response = await fetch('/api/accounts/register/', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
         body: JSON.stringify(payload)
       });
       const result = document.getElementById('result');

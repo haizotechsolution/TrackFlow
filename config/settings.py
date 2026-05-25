@@ -202,6 +202,21 @@ SIMPLE_JWT = {
 # CUSTOM USER
 # ==========================================
 AUTH_USER_MODEL = "accounts.CustomUser"
+LOGIN_URL = "account-login-page"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "account-login-page"
+
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+
+if not DEBUG and "test" not in sys.argv:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
 
 # ==========================================
 # CHANNELS

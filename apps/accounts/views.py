@@ -9,6 +9,7 @@ from django.contrib.auth import login as django_login
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
 from .models import WebhookEndpoint
@@ -28,6 +29,8 @@ class TrackFlowTokenObtainPairView(TokenObtainPairView):
         serializer.is_valid(raise_exception=True)
         user = serializer.user
         django_login(request._request, user)
+        if not request.data.get('remember_me'):
+            request._request.session.set_expiry(0)
         data = serializer.validated_data
         data["dashboard_url"] = get_dashboard_url(user)
         return Response(data, status=status.HTTP_200_OK)
@@ -77,8 +80,9 @@ class LogoutView(APIView):
 
     def post(self, request):
         refresh = request.data.get('refresh')
+        django_logout(request)
         if not refresh:
-            return Response({'detail': 'Refresh token is required.'}, status=400)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
         try:
             RefreshToken(refresh).blacklist()
@@ -117,6 +121,7 @@ def register_page(request):
     return render(request, 'accounts/register.html')
 
 
+@login_required(login_url='account-login-page')
 def settings_page(request):
     return render(request, 'accounts/settings.html')
 
@@ -130,13 +135,17 @@ def web_logout(request):
 def get_dashboard_url(user):
     if user.is_staff or getattr(user, 'is_ops', False):
         return reverse('home')
+    if getattr(user, 'is_customer', False):
+        return reverse('shipment-list-page')
     return reverse('merchant_dashboard')
 
 
 def home_page(request):
+    if not request.user.is_authenticated:
+        return redirect('account-login-page')
     if request.user.is_authenticated and not (
         request.user.is_staff or getattr(request.user, 'is_ops', False)
     ):
-        return redirect('merchant_dashboard')
+        return redirect(get_dashboard_url(request.user))
 
     return render(request, 'admin.html')
