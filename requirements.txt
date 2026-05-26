@@ -4,10 +4,10 @@ djangorestframework-simplejwt
 django-environ
 django-filter
 channels
+channels-redis
 psycopg2-binary
 redis
 celery
-redis
 django-fsm
 whitenoise
 pillow

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Address, Shipment, ShipmentItem
+from .services import calculate_freight_amount
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -84,6 +85,14 @@ class ShipmentSerializer(serializers.ModelSerializer):
         shipment = Shipment.objects.create(
             sender_address=sender,
             receiver_address=receiver,
+            freight_amount=calculate_freight_amount(
+                validated_data.get('weight_kg'),
+                validated_data.get('length_cm', 0),
+                validated_data.get('width_cm', 0),
+                validated_data.get('height_cm', 0),
+                validated_data.get('service_type', Shipment.SERVICE_STANDARD),
+                validated_data.get('cod_amount', 0),
+            ),
             **validated_data
         )
 

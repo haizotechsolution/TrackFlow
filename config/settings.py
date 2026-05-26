@@ -124,7 +124,7 @@ else:
             "ENGINE": DB_ENGINE,
             "NAME": env("DB_NAME", default="trackflow_db"),
             "USER": env("DB_USER", default="postgres"),
-            "PASSWORD": env("DB_PASSWORD", default="oracle"),
+            "PASSWORD": env("DB_PASSWORD", default="1234"),
             "HOST": env("DB_HOST", default="localhost"),
             "PORT": env("DB_PORT", default="5432"),
         }
@@ -187,6 +187,14 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
     ),
+    "DEFAULT_THROTTLE_CLASSES": (
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ),
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": env("DRF_ANON_THROTTLE_RATE", default="100/hour"),
+        "user": env("DRF_USER_THROTTLE_RATE", default="1000/hour"),
+    },
 }
 
 # ==========================================
@@ -196,6 +204,9 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
 }
 
 # ==========================================
@@ -225,8 +236,11 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": env(
             "CHANNEL_LAYER_BACKEND",
-            default="channels.layers.InMemoryChannelLayer",
+            default="channels_redis.core.RedisChannelLayer",
         ),
+        "CONFIG": {
+            "hosts": [env("REDIS_URL", default="redis://127.0.0.1:6379/0")],
+        },
     },
 }
 
@@ -235,12 +249,12 @@ CHANNEL_LAYERS = {
 # ==========================================
 CELERY_BROKER_URL = env(
     "CELERY_BROKER_URL",
-    default="memory://"
+    default="redis://127.0.0.1:6379/1"
 )
 
 CELERY_RESULT_BACKEND = env(
     "CELERY_RESULT_BACKEND",
-    default="cache+memory://"
+    default="redis://127.0.0.1:6379/2"
 )
 
 # ==========================================

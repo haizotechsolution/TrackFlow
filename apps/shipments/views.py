@@ -1,6 +1,7 @@
 from django.http import FileResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django_fsm import can_proceed
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -21,6 +22,15 @@ class ShipmentViewSet(viewsets.ModelViewSet):
     filterset_class = ShipmentFilter
     search_fields = ['awb', 'receiver_address__name', 'receiver_address__phone']
     ordering_fields = ['created_at', 'updated_at', 'status']
+    transition_actions = {
+        'schedule_pickup': 'schedule_pickup',
+        'mark_in_transit': 'mark_in_transit',
+        'mark_out_for_delivery': 'mark_out_for_delivery',
+        'mark_delivered': 'mark_delivered',
+        'mark_failed': 'mark_failed',
+        'mark_rto': 'mark_rto',
+        'cancel': 'cancel',
+    }
 
     def get_permissions(self):
         return super().get_permissions()
@@ -44,6 +54,36 @@ class ShipmentViewSet(viewsets.ModelViewSet):
     def pod_upload_url(self, request, awb=None):
         shipment = self.get_object()
         return Response(get_pod_upload_url(shipment.awb))
+
+    @action(detail=True, methods=['post'], url_path='transition')
+    def transition_status(self, request, awb=None):
+        shipment = self.get_object()
+        action_name = request.data.get('action')
+        method_name = self.transition_actions.get(action_name)
+        if not method_name:
+            return Response(
+                {
+                    'detail': 'Unsupported transition.',
+                    'allowed_actions': list(self.transition_actions),
+                },
+                status=400,
+            )
+
+        transition_method = getattr(shipment, method_name)
+        if not can_proceed(transition_method):
+            return Response(
+                {
+                    'detail': (
+                        f'Cannot run {action_name} while shipment '
+                        f'is {shipment.status}.'
+                    )
+                },
+                status=400,
+            )
+
+        transition_method()
+        shipment.save(update_fields=['status', 'updated_at'])
+        return Response(ShipmentSerializer(shipment).data)
 
 
 class BulkShipmentCreateView(APIView):

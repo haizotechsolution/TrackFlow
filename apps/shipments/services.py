@@ -11,6 +11,68 @@ from django.utils.text import slugify
 from .models import Address, Shipment
 
 
+VOLUMETRIC_DIVISOR = Decimal('5000')
+BASE_FREIGHT = Decimal('60.00')
+PER_KG_RATE = Decimal('35.00')
+EXPRESS_SURCHARGE = Decimal('75.00')
+SAME_DAY_SURCHARGE = Decimal('150.00')
+COD_PERCENTAGE = Decimal('0.02')
+MIN_COD_FEE = Decimal('25.00')
+
+
+def decimal_or_zero(value):
+    if value in (None, ''):
+        return Decimal('0')
+    return Decimal(str(value))
+
+
+def calculate_volumetric_weight(length_cm, width_cm, height_cm):
+    volume = (
+        decimal_or_zero(length_cm)
+        * decimal_or_zero(width_cm)
+        * decimal_or_zero(height_cm)
+    )
+    if volume <= 0:
+        return Decimal('0')
+    return (volume / VOLUMETRIC_DIVISOR).quantize(Decimal('0.01'))
+
+
+def calculate_chargeable_weight(weight_kg, length_cm=0, width_cm=0, height_cm=0):
+    actual_weight = decimal_or_zero(weight_kg)
+    volumetric_weight = calculate_volumetric_weight(length_cm, width_cm, height_cm)
+    return max(actual_weight, volumetric_weight)
+
+
+def calculate_cod_fee(cod_amount):
+    amount = decimal_or_zero(cod_amount)
+    if amount <= 0:
+        return Decimal('0.00')
+    return max(MIN_COD_FEE, amount * COD_PERCENTAGE).quantize(Decimal('0.01'))
+
+
+def calculate_freight_amount(
+    weight_kg,
+    length_cm=0,
+    width_cm=0,
+    height_cm=0,
+    service_type=Shipment.SERVICE_STANDARD,
+    cod_amount=0,
+):
+    chargeable_weight = calculate_chargeable_weight(
+        weight_kg,
+        length_cm,
+        width_cm,
+        height_cm,
+    )
+    freight = BASE_FREIGHT + (chargeable_weight * PER_KG_RATE)
+    if service_type == Shipment.SERVICE_EXPRESS:
+        freight += EXPRESS_SURCHARGE
+    elif service_type == Shipment.SERVICE_SAME_DAY:
+        freight += SAME_DAY_SURCHARGE
+    freight += calculate_cod_fee(cod_amount)
+    return freight.quantize(Decimal('0.01'))
+
+
 def generate_awb(merchant_id=None):
     prefix = 'TF'
     merchant_part = f'{merchant_id or 0:04d}'[-4:]
@@ -120,13 +182,30 @@ def bulk_create_shipments_from_csv(file_obj, merchant):
                 state=row.get('receiver_state') or '',
                 pincode=row.get('receiver_pincode') or '',
             )
+            weight_kg = Decimal(row.get('weight_kg') or '0.5')
+            length_cm = Decimal(row.get('length_cm') or '0')
+            width_cm = Decimal(row.get('width_cm') or '0')
+            height_cm = Decimal(row.get('height_cm') or '0')
+            service_type = row.get('service_type') or Shipment.SERVICE_STANDARD
+            cod_amount = Decimal(row.get('cod_amount') or '0')
             shipment = Shipment.objects.create(
                 merchant=merchant,
                 sender_address=sender,
                 receiver_address=receiver,
-                weight_kg=Decimal(row.get('weight_kg') or '0.5'),
-                service_type=row.get('service_type') or Shipment.SERVICE_STANDARD,
-                cod_amount=Decimal(row.get('cod_amount') or '0'),
+                weight_kg=weight_kg,
+                length_cm=length_cm,
+                width_cm=width_cm,
+                height_cm=height_cm,
+                service_type=service_type,
+                cod_amount=cod_amount,
+                freight_amount=calculate_freight_amount(
+                    weight_kg,
+                    length_cm,
+                    width_cm,
+                    height_cm,
+                    service_type,
+                    cod_amount,
+                ),
             )
             created.append(shipment.awb)
         except Exception as exc:
