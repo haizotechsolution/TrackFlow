@@ -4,10 +4,11 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex align-items-center justify-content-between bg-white rounded shadow-sm p-4">
+            <div class="hero-panel d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <div>
-                    <h1 class="h3 mb-1">Admin Dashboard</h1>
-                    <p class="text-muted mb-0">
+                    <span class="eyebrow">Admin console</span>
+                    <h1 class="page-title mt-2">Platform operations overview</h1>
+                    <p class="page-subtitle">
                         {% if request.user.is_authenticated %}
                             Welcome back, {{ request.user.get_full_name|default:request.user.email }}.
                         {% else %}
@@ -16,7 +17,7 @@
                     </p>
                 </div>
                 <div>
-                    <a href="{% url 'admin:index' %}" class="btn btn-primary">Go to Django Admin</a>
+                    <a href="{% url 'admin:index' %}" class="btn btn-primary"><i class="bi bi-shield-lock me-1"></i> Go to Django Admin</a>
                 </div>
             </div>
         </div>
@@ -25,24 +26,28 @@
     <div class="row g-4">
         <div class="col-lg-3 col-md-6">
             <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
                 <h5 class="mb-3">Shipments</h5>
                 <p class="mb-0 text-muted">View and manage shipment records.</p>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
             <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-geo-alt"></i></div>
                 <h5 class="mb-3">Tracking</h5>
                 <p class="mb-0 text-muted">Monitor live tracking updates.</p>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
             <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-credit-card"></i></div>
                 <h5 class="mb-3">Billing</h5>
                 <p class="mb-0 text-muted">Review invoices and remittances.</p>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
             <div class="stat-card">
+                <div class="stat-icon"><i class="bi bi-bar-chart"></i></div>
                 <h5 class="mb-3">Analytics</h5>
                 <p class="mb-0 text-muted">Analyze platform performance.</p>
             </div>
@@ -51,18 +56,26 @@
 
     <div class="row mt-4">
         <div class="col-12">
-            <div class="stat-card">
-                <h5 class="mb-3">Quick Actions</h5>
-                <div class="row">
+            <div class="card">
+                <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <span class="eyebrow">Workflow</span>
+                        <h5 class="mb-0 mt-1">Quick Actions</h5>
+                    </div>
+                    <span class="badge text-bg-primary">Admin</span>
+                </div>
+                <div class="row g-3">
                     <div class="col-md-4 mb-3">
-                        <a href="{% url 'shipment-create-page' %}" class="btn btn-outline-primary w-100">Create Shipment</a>
+                        <a href="{% url 'shipment-create-page' %}" class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle me-1"></i> Create Shipment</a>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <a href="{% url 'merchant_dashboard' %}" class="btn btn-outline-secondary w-100">View Reports</a>
+                        <a href="{% url 'merchant_dashboard' %}" class="btn btn-outline-secondary w-100"><i class="bi bi-graph-up me-1"></i> View Reports</a>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <a href="{% url 'admin:index' %}" class="btn btn-outline-success w-100">Manage Users</a>
+                        <a href="{% url 'admin:index' %}" class="btn btn-outline-primary w-100"><i class="bi bi-people me-1"></i> Manage Users</a>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

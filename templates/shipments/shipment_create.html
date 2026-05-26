@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
   <div>
-    <h1 class="h3 mb-1">New shipment</h1>
-    <p class="text-muted mb-0">Create a shipment with sender, receiver, package and service details.</p>
+    <span class="eyebrow">Shipment creation</span>
+    <h1 class="page-title mt-2">New shipment</h1>
+    <p class="page-subtitle">Create a shipment with sender, receiver, package and service details.</p>
   </div>
-  <a class="btn btn-outline-secondary" href="{% url 'shipment-list-page' %}">Back to Shipments</a>
+  <a class="btn btn-outline-secondary" href="{% url 'shipment-list-page' %}"><i class="bi bi-arrow-left me-1"></i> Back to Shipments</a>
 </div>
 
 {% if errors %}
@@ -15,12 +16,12 @@
   </div>
 {% endif %}
 
-<form method="post" class="bg-white rounded shadow-sm p-4">
+<form method="post" class="card p-4">
   {% csrf_token %}
 
   <div class="row g-4">
     <div class="col-lg-6">
-      <h2 class="h5 mb-3">Sender address</h2>
+      <div class="d-flex align-items-center gap-2 mb-3"><span class="stat-icon mb-0"><i class="bi bi-box-arrow-up"></i></span><h2 class="h5 fw-bold mb-0">Sender address</h2></div>
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label" for="sender_name">Name</label>
@@ -58,7 +59,7 @@
     </div>
 
     <div class="col-lg-6">
-      <h2 class="h5 mb-3">Receiver address</h2>
+      <div class="d-flex align-items-center gap-2 mb-3"><span class="stat-icon mb-0"><i class="bi bi-house-check"></i></span><h2 class="h5 fw-bold mb-0">Receiver address</h2></div>
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label" for="receiver_name">Name</label>
@@ -98,7 +99,7 @@
 
   <hr class="my-4">
 
-  <h2 class="h5 mb-3">Package details</h2>
+  <div class="d-flex align-items-center gap-2 mb-3"><span class="stat-icon mb-0"><i class="bi bi-rulers"></i></span><h2 class="h5 fw-bold mb-0">Package details</h2></div>
   <div class="row g-3">
     <div class="col-md-3">
       <label class="form-label" for="weight_kg">Weight (kg)</label>
@@ -150,7 +151,7 @@
 
   <div class="d-flex justify-content-end gap-2 mt-4">
     <a class="btn btn-outline-secondary" href="{% url 'shipment-list-page' %}">Cancel</a>
-    <button class="btn btn-primary" type="submit">Create Shipment</button>
+    <button class="btn btn-primary" type="submit"><i class="bi bi-check2-circle me-1"></i> Create Shipment</button>
   </div>
 </form>
 {% endblock %}

@@ -2,9 +2,23 @@
 
 {% block content %}
 <main class="container-fluid p-0">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1 class="h3">Billing</h1>
+  <section class="page-header mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div>
+        <span class="eyebrow">Billing center</span>
+        <h1 class="page-title mt-2">Invoices and remittance</h1>
+        <p class="page-subtitle">Premium invoice review with payment status, GST visibility, and clean transaction scanning.</p>
+      </div>
+      <span class="badge text-bg-warning">Pending review</span>
+    </div>
+  </section>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4"><div class="stat-card"><div class="stat-icon"><i class="bi bi-receipt"></i></div><h6>Invoices</h6><h2>{{ invoices|length }}</h2></div></div>
+    <div class="col-md-4"><div class="stat-card"><div class="stat-icon"><i class="bi bi-cash-coin"></i></div><h6>Payment status</h6><h2>Open</h2></div></div>
+    <div class="col-md-4"><div class="stat-card"><div class="stat-icon"><i class="bi bi-shield-check"></i></div><h6>GST audit</h6><h2>Ready</h2></div></div>
   </div>
+
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
       <thead>
@@ -20,7 +34,7 @@
       <tbody>
         {% for i in invoices %}
           <tr>
-            <td class="fw-semibold">{{ i.invoice_number }}</td>
+            <td class="fw-semibold"><i class="bi bi-file-earmark-text text-primary me-2"></i>{{ i.invoice_number }}</td>
             <td><span class="badge text-bg-warning">Pending</span></td>
             <td>{{ i.total_amount }}</td>
             <td>{{ i.gst_amount }}</td>
@@ -28,7 +42,7 @@
             <td>{{ i.created_at|date:"d M Y" }}</td>
           </tr>
         {% empty %}
-          <tr><td colspan="6"><div class="empty-state">No invoices available yet.</div></td></tr>
+          <tr><td colspan="6"><div class="empty-state"><i class="bi bi-receipt d-block fs-2 mb-2"></i>No invoices available yet.</div></td></tr>
         {% endfor %}
       </tbody>
     </table>

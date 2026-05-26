@@ -2,11 +2,20 @@
 
 {% block content %}
 
-<h2 class="mb-4">
-    Operations Dashboard
-</h2>
+<section class="page-header mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <span class="eyebrow">Operations</span>
+            <h1 class="page-title mt-2">Dispatch command center</h1>
+            <p class="page-subtitle">Live fleet, failed delivery, and NDR pressure in a focused enterprise operations layout.</p>
+        </div>
+        <a class="btn btn-primary" href="{% url 'shipment-list-page' %}">
+            <i class="bi bi-truck me-1"></i> Open shipments
+        </a>
+    </div>
+</section>
 
-<div class="row">
+<div class="row g-3">
 
     {% include 'components/stats_card.html'
     with title='Live Drivers' value='45' %}
@@ -20,6 +29,44 @@
     {% include 'components/stats_card.html'
     with title='NDR Cases' value='32' %}
 
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <span class="eyebrow">Dispatch flow</span>
+                <h2 class="h4 fw-bold mb-4">Lane performance</h2>
+                <div class="d-grid gap-4">
+                    <div>
+                        <div class="d-flex justify-content-between mb-2"><strong>Pickup complete</strong><span class="text-muted">78%</span></div>
+                        <div class="progress-rail"><span style="width: 78%"></span></div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-2"><strong>In transit</strong><span class="text-muted">64%</span></div>
+                        <div class="progress-rail"><span style="width: 64%"></span></div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-2"><strong>Delivery attempts</strong><span class="text-muted">91%</span></div>
+                        <div class="progress-rail"><span style="width: 91%"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <span class="eyebrow">Priority actions</span>
+                <h2 class="h4 fw-bold mb-4">Exception queue</h2>
+                <div class="timeline">
+                    <div class="timeline-item"><span class="timeline-dot"></span><strong>Route reassignment</strong><div class="text-muted small">12 shipments need driver reassignment.</div></div>
+                    <div class="timeline-item"><span class="timeline-dot"></span><strong>NDR follow-up</strong><div class="text-muted small">32 pending customer confirmations.</div></div>
+                    <div class="timeline-item"><span class="timeline-dot"></span><strong>Hub scan delay</strong><div class="text-muted small">North lane requires audit.</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

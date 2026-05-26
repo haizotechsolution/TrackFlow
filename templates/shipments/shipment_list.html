@@ -2,14 +2,21 @@
 
 {% block content %}
   <main class="container-fluid p-0">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h1 class="h3">Shipments</h1>
-      <div>
-        <a class="btn btn-outline-secondary" href="{% url 'shipment-bulk-upload-page' %}">Bulk Upload</a>
-        <a class="btn btn-primary" href="{% url 'shipment-create-page' %}">New Shipment</a>
+    <section class="page-header mb-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+          <span class="eyebrow">Shipment desk</span>
+          <h1 class="page-title mt-2">Shipments</h1>
+          <p class="page-subtitle">Search AWBs, monitor delivery status, and act on exceptions from a clean operations table.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-outline-secondary" href="{% url 'shipment-bulk-upload-page' %}"><i class="bi bi-cloud-arrow-up me-1"></i> Bulk Upload</a>
+          <a class="btn btn-primary" href="{% url 'shipment-create-page' %}"><i class="bi bi-plus-circle me-1"></i> New Shipment</a>
+        </div>
       </div>
-    </div>
-    <form class="row g-2 align-items-end bg-white border rounded p-3 mb-3">
+    </section>
+
+    <form class="filter-panel row g-3 align-items-end p-3 p-lg-4 mb-4">
       <div class="col-md-3">
         <label class="form-label" for="shipment-search">Search</label>
         <input id="shipment-search" class="form-control" name="q" value="{{ filters.q }}" placeholder="AWB number">
@@ -36,9 +43,34 @@
         <input id="city" class="form-control" name="city" value="{{ filters.city }}" placeholder="Receiver city">
       </div>
       <div class="col-md-1 d-grid">
-        <button class="btn btn-secondary" type="submit">Apply</button>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-funnel me-1"></i> Apply</button>
       </div>
     </form>
+
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+          <h6>Active lanes</h6>
+          <h2>12</h2>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-truck-front"></i></div>
+          <h6>In transit</h6>
+          <h2>68%</h2>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+          <h6>Exception watch</h6>
+          <h2>Live</h2>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <section class="col-12">
         <div class="table-responsive">
@@ -47,7 +79,7 @@
             <tbody>
               {% for shipment in shipments %}
               <tr>
-                <td class="fw-semibold">{{ shipment.awb }}</td>
+                <td class="fw-semibold"><i class="bi bi-upc-scan text-primary me-2"></i>{{ shipment.awb }}</td>
                 <td>{{ shipment.sender_address.name }}</td>
                 <td>{{ shipment.receiver_address.name }}</td>
                 <td><span class="badge {% if shipment.status == 'DELIVERED' %}text-bg-success{% elif shipment.status == 'FAILED' or shipment.status == 'RTO' %}text-bg-danger{% elif shipment.status == 'IN_TRANSIT' or shipment.status == 'OUT_FOR_DELIVERY' %}text-bg-info{% else %}text-bg-secondary{% endif %}">{{ shipment.get_status_display }}</span></td>
@@ -55,10 +87,10 @@
                 <td>{{ shipment.weight_kg }} kg</td>
                 <td>{{ shipment.freight_amount }}</td>
                 <td>{{ shipment.cod_amount }}</td>
-                <td><a class="btn btn-sm btn-outline-primary" href="{% url 'shipment-detail-page' shipment.awb %}">View</a></td>
+                <td><a class="btn btn-sm btn-outline-primary" href="{% url 'shipment-detail-page' shipment.awb %}"><i class="bi bi-arrow-up-right"></i></a></td>
               </tr>
               {% empty %}
-              <tr><td colspan="9"><div class="empty-state">No shipments match your filters.</div></td></tr>
+              <tr><td colspan="9"><div class="empty-state"><i class="bi bi-inbox d-block fs-2 mb-2"></i>No shipments match your filters.</div></td></tr>
               {% endfor %}
             </tbody>
           </table>
