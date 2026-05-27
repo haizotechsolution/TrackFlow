@@ -46,7 +46,22 @@
                         <span class="eyebrow">Performance</span>
                         <h2 class="h4 fw-bold mb-0">Shipment mix</h2>
                     </div>
-                    <span class="badge text-bg-primary">Live</span>
+                    <div class="text-end">
+                        <details class="position-relative">
+                            <summary class="btn btn-outline-primary btn-sm list-unstyled">
+                                <i class="bi bi-download me-1"></i> Download Reports
+                            </summary>
+                            <div class="card mt-2 position-absolute end-0 z-3" style="min-width: 210px;">
+                                <div class="card-body p-2 d-grid gap-2">
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'daily' %}">Daily PDF</a>
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'weekly' %}">Weekly PDF</a>
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'monthly' %}">Monthly PDF</a>
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'yearly' %}">Yearly PDF</a>
+                                </div>
+                            </div>
+                        </details>
+                        <div class="small text-muted mt-2 d-none" data-report-status>Preparing report download...</div>
+                    </div>
                 </div>
                 <canvas id="shipmentChart" height="120"></canvas>
             </div>
@@ -114,6 +129,14 @@ new Chart(ctx, {
     }
 });
 
+</script>
+<script>
+document.querySelectorAll('[data-report-download]').forEach((link) => {
+    link.addEventListener('click', () => {
+        const status = document.querySelector('[data-report-status]');
+        if (status) status.classList.remove('d-none');
+    });
+});
 </script>
 
 {% endblock %}

@@ -47,6 +47,36 @@
       </div>
     </form>
 
+    {% if request.user.is_customer %}
+    <section class="card mb-4">
+      <div class="card-body p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div>
+            <span class="eyebrow">Analytics</span>
+            <h2 class="h5 fw-bold mt-2 mb-1">Customer shipment reports</h2>
+            <p class="text-muted mb-0">Download shipment history, delivery, tracking, billing, and payment summaries for your own account.</p>
+          </div>
+          <div class="text-end">
+            <details class="position-relative">
+              <summary class="btn btn-outline-primary list-unstyled">
+                <i class="bi bi-download me-1"></i> Download Reports
+              </summary>
+              <div class="card mt-2 position-absolute end-0 z-3" style="min-width: 210px;">
+                <div class="card-body p-2 d-grid gap-2">
+                  <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'daily' %}">Daily PDF</a>
+                  <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'weekly' %}">Weekly PDF</a>
+                  <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'monthly' %}">Monthly PDF</a>
+                  <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'user-analytics-report-pdf' 'yearly' %}">Yearly PDF</a>
+                </div>
+              </div>
+            </details>
+            <div class="small text-muted mt-2 d-none" data-report-status>Preparing report download...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
     <div class="row g-3 mb-4">
       <div class="col-md-4">
         <div class="stat-card">
@@ -98,4 +128,12 @@
       </section>
     </div>
   </main>
+  <script>
+  document.querySelectorAll('[data-report-download]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const status = document.querySelector('[data-report-status]');
+      if (status) status.classList.remove('d-none');
+    });
+  });
+  </script>
 {% endblock %}

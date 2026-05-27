@@ -70,7 +70,20 @@
                         <a href="{% url 'shipment-create-page' %}" class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle me-1"></i> Create Shipment</a>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <a href="{% url 'merchant_dashboard' %}" class="btn btn-outline-secondary w-100"><i class="bi bi-graph-up me-1"></i> View Reports</a>
+                        <details class="position-relative">
+                            <summary class="btn btn-outline-secondary w-100 list-unstyled">
+                                <i class="bi bi-graph-up me-1"></i> View Reports
+                            </summary>
+                            <div class="card mt-2 position-absolute w-100 z-3">
+                                <div class="card-body p-2 d-grid gap-2">
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'admin-analytics-report-csv' 'daily' %}">Daily Report CSV</a>
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'admin-analytics-report-csv' 'weekly' %}">Weekly Report CSV</a>
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'admin-analytics-report-csv' 'monthly' %}">Monthly Report CSV</a>
+                                    <a class="btn btn-sm btn-outline-primary" data-report-download href="{% url 'admin-analytics-report-csv' 'yearly' %}">Yearly Report CSV</a>
+                                </div>
+                            </div>
+                        </details>
+                        <div class="small text-muted mt-2 d-none" data-report-status>Preparing report download...</div>
                     </div>
                     <div class="col-md-4 mb-3">
                         <a href="{% url 'admin:index' %}" class="btn btn-outline-primary w-100"><i class="bi bi-people me-1"></i> Manage Users</a>
@@ -81,4 +94,12 @@
         </div>
     </div>
 </div>
+<script>
+document.querySelectorAll('[data-report-download]').forEach((link) => {
+    link.addEventListener('click', () => {
+        const status = document.querySelector('[data-report-status]');
+        if (status) status.classList.remove('d-none');
+    });
+});
+</script>
 {% endblock %}

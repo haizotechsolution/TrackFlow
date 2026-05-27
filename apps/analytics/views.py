@@ -1,13 +1,16 @@
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .models import DailyAnalytics
 from .serializers import DailyAnalyticsSerializer
+from .services import build_admin_csv_response, build_user_pdf_response
 from apps.shipments.models import DELIVERED, FAILED, RTO, Shipment
 
 
@@ -55,3 +58,31 @@ def merchant_dashboard_page(request):
     }
 
     return render(request, 'merchant/dashboard.html', context)
+
+
+class AdminAnalyticsCSVReportView(APIView):
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, period):
+        if not (request.user.is_staff or getattr(request.user, 'is_ops', False)):
+            return Response({'detail': 'Admin report access is not allowed.'}, status=403)
+
+        try:
+            return build_admin_csv_response(request.user, period)
+        except ValueError as exc:
+            return Response({'detail': str(exc)}, status=400)
+
+
+class UserAnalyticsPDFReportView(APIView):
+    authentication_classes = [SessionAuthentication, JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, period):
+        if request.user.is_staff or getattr(request.user, 'is_ops', False):
+            return Response({'detail': 'Use admin CSV reports for platform analytics.'}, status=400)
+
+        try:
+            return build_user_pdf_response(request.user, period)
+        except ValueError as exc:
+            return Response({'detail': str(exc)}, status=400)
