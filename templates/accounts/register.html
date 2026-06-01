@@ -48,6 +48,9 @@
               </div>
               <button class="btn btn-primary mt-3" type="submit">Register</button>
             </form>
+            <div id="post-register-actions" class="mt-3 d-none">
+              <a class="btn btn-outline-primary" href="{% url 'account-login-page' %}">Login Now</a>
+            </div>
           </div>
             </div>
           </div>
@@ -70,8 +73,10 @@
         body: JSON.stringify(payload)
       });
       const result = document.getElementById('result');
+      const postRegisterActions = document.getElementById('post-register-actions');
       result.className = response.ok ? 'alert alert-success' : 'alert alert-danger';
       result.textContent = response.ok ? 'Account created. You can sign in now.' : JSON.stringify(await response.json());
+      postRegisterActions.classList.toggle('d-none', !response.ok);
     });
   </script>
 </body>

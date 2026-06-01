@@ -10,8 +10,10 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import PasswordResetView
 from django.views.decorators.http import require_POST
 
+from .forms import MerchantPasswordResetForm
 from .models import WebhookEndpoint
 from .serializers import (
     ProfileSerializer,
@@ -111,6 +113,14 @@ class WebhookEndpointViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance.is_active = False
         instance.save(update_fields=['is_active'])
+
+
+class MerchantPasswordResetView(PasswordResetView):
+    form_class = MerchantPasswordResetForm
+    template_name = 'accounts/password_reset.html'
+    email_template_name = 'accounts/password_reset_email.html'
+    subject_template_name = 'accounts/password_reset_subject.txt'
+    success_url = '/api/accounts/password-reset/done/'
 
 
 def login_page(request):

@@ -283,7 +283,10 @@ AWS_S3_REGION_NAME = env(
 # ==========================================
 # EMAIL
 # ==========================================
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = env(
+    "EMAIL_BACKEND",
+    default="django.core.mail.backends.smtp.EmailBackend",
+)
 
 EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
@@ -308,3 +311,4 @@ WHATSAPP_TOKEN = env("WHATSAPP_TOKEN", default="")
 if "test" in sys.argv:
     CELERY_TASK_ALWAYS_EAGER = True
     CELERY_TASK_EAGER_PROPAGATES = True
+    EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
