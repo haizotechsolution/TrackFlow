@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     LogoutView,
+    MerchantPasswordResetView,
     ProfileView,
     RegisterView,
     RotateAPIKeyView,
@@ -28,11 +29,7 @@ urlpatterns = [
     path('page/logout/', web_logout, name='account-web-logout'),
     path(
         'password-reset/',
-        auth_views.PasswordResetView.as_view(
-            template_name='accounts/password_reset.html',
-            email_template_name='accounts/password_reset_email.html',
-            success_url='/api/accounts/password-reset/done/',
-        ),
+        MerchantPasswordResetView.as_view(),
         name='password_reset',
     ),
     path(
