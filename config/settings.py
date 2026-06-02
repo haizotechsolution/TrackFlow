@@ -290,13 +290,13 @@ EMAIL_BACKEND = env(
 
 EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
 EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="trackflow911@gmail.com")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="skuz ipjc pqtf qmfu")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 
 DEFAULT_FROM_EMAIL = env(
     "DEFAULT_FROM_EMAIL",
-    default="noreply@trackflow.com"
+    default="trackflow911@gmail.com"
 )
 
 SMS_API_URL = env("SMS_API_URL", default="")
