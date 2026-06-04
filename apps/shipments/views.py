@@ -2,7 +2,7 @@ from django.http import FileResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django_fsm import can_proceed
-from rest_framework import viewsets
+from rest_framework import request, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -187,13 +187,17 @@ def shipment_create_page(request):
         if serializer.is_valid():
             shipment = serializer.save()
             return redirect('shipment-detail-page', awb=shipment.awb)
+
+        print("SHIPMENT ERRORS:")
+        print(serializer.errors)
+
         return render(
             request,
             'shipments/shipment_create.html',
             {'errors': serializer.errors, 'form_data': request.POST},
             status=400
-        )
-
+      )
+        
     return render(request, 'shipments/shipment_create.html')
 
 
