@@ -19,6 +19,50 @@
     <div class="col-md-4"><div class="stat-card"><div class="stat-icon"><i class="bi bi-shield-check"></i></div><h6>GST audit</h6><h2>Ready</h2></div></div>
   </div>
 
+  <div class="card p-4 mb-4">
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <span class="stat-icon mb-0"><i class="bi bi-receipt-cutoff"></i></span>
+      <h2 class="h5 fw-bold mb-0">Billing</h2>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Shipment</th>
+            <th>Receiver</th>
+            <th>Service</th>
+            <th>Weight</th>
+            <th>Freight</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for shipment in shipments %}
+            <tr>
+              <td class="fw-semibold">{{ shipment.awb }}</td>
+              <td>{{ shipment.receiver_address.name }}<span class="d-block text-muted small">{{ shipment.receiver_address.city }}</span></td>
+              <td>{{ shipment.get_service_type_display }}</td>
+              <td>{{ shipment.weight_kg }} kg</td>
+              <td>{{ shipment.freight_amount }}</td>
+              <td class="text-end">
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="shipment_awb" value="{{ shipment.awb }}">
+                  <button class="btn btn-primary btn-sm" type="submit">
+                    <i class="bi bi-file-earmark-plus me-1"></i> Generate Invoice
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6"><div class="empty-state"><i class="bi bi-box-seam d-block fs-2 mb-2"></i>No shipments available for invoicing yet.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
       <thead>
@@ -34,7 +78,7 @@
       <tbody>
         {% for i in invoices %}
           <tr>
-            <td class="fw-semibold"><i class="bi bi-file-earmark-text text-primary me-2"></i>{{ i.invoice_number }}</td>
+            <td class="fw-semibold"><a href="{% url 'billing-invoice-detail' i.pk %}"><i class="bi bi-file-earmark-text text-primary me-2"></i>{{ i.invoice_number }}</a></td>
             <td><span class="badge text-bg-warning">Pending</span></td>
             <td>{{ i.total_amount }}</td>
             <td>{{ i.gst_amount }}</td>
@@ -48,4 +92,5 @@
     </table>
   </div>
 </main>
+
 {% endblock %}

@@ -306,6 +306,11 @@ WHATSAPP_API_URL = env("WHATSAPP_API_URL", default="")
 WHATSAPP_TOKEN = env("WHATSAPP_TOKEN", default="")
 
 # ==========================================
+# MAPS
+# ==========================================
+GOOGLE_MAPS_API_KEY = env("GOOGLE_MAPS_API_KEY", default="")
+
+# ==========================================
 # TEST SETTINGS
 # ==========================================
 if "test" in sys.argv:

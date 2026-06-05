@@ -19,11 +19,52 @@
         <div class="card-body p-4">
           <span class="eyebrow">Network map</span>
           <h2 class="h4 fw-bold mt-2 mb-3">Current movement view</h2>
-          <div class="map-placeholder">
-            <div class="text-center">
-              <i class="bi bi-geo-alt-fill fs-2 text-primary"></i>
-              <div class="fw-bold mt-2">Map-ready tracking surface</div>
-              <div class="small">Connects visually to live event history below.</div>
+          <div class="row g-3">
+            <div class="col-xl-8">
+              <div class="map-placeholder trackflow-map-shell">
+                <div id="trackflowHubMap" class="trackflow-google-map" aria-label="TrackFlow hub network map"></div>
+                <div class="trackflow-map-state" data-map-loading>
+                  <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+                  <div class="fw-bold">Loading TrackFlow hub network</div>
+                  <div class="small">Preparing Google Maps markers and hub connections.</div>
+                </div>
+                <div class="trackflow-map-state d-none" data-map-error>
+                  <i class="bi bi-exclamation-triangle fs-2 text-warning"></i>
+                  <div class="fw-bold mt-2">Map could not be loaded</div>
+                  <div class="small" data-map-error-message>Check the Google Maps API key and network connection.</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4">
+              <div class="hub-panel">
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                  <div>
+                    <div class="eyebrow">Hub cities</div>
+                    <div class="fw-bold">{{ hub_cities|length }} active cities</div>
+                  </div>
+                  <button class="btn btn-outline-primary btn-sm" type="button" data-use-location>
+                    <i class="bi bi-crosshair me-1"></i> Nearby
+                  </button>
+                </div>
+
+                <label class="form-label" for="hubSearch">Search hubs</label>
+                <input class="form-control mb-2" id="hubSearch" type="search" placeholder="City, code, or state" data-hub-search>
+
+                <label class="form-label" for="hubCityFilter">City filter</label>
+                <select class="form-select mb-3" id="hubCityFilter" data-hub-city-filter>
+                  <option value="">All hub cities</option>
+                  {% for city in hub_cities %}
+                    <option value="{{ city }}">{{ city }}</option>
+                  {% endfor %}
+                </select>
+
+                <div class="hub-list" data-hub-list></div>
+
+                <div class="nearby-hubs mt-3">
+                  <div class="fw-bold small text-uppercase text-muted mb-2">Nearby hubs</div>
+                  <div data-nearby-hubs class="small text-muted">Select a hub marker to see nearby TrackFlow cities.</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -79,4 +120,353 @@
     </table>
   </div>
 </main>
+
+{{ hub_locations|json_script:"trackflow-hub-data" }}
+
+<style>
+  .trackflow-map-shell {
+    position: relative;
+    min-height: 326px;
+    overflow: hidden;
+  }
+
+  .trackflow-google-map {
+    position: absolute;
+    inset: 0;
+    min-height: 326px;
+  }
+
+  .trackflow-map-state {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    padding: 24px;
+    text-align: center;
+    color: var(--tf-slate-500);
+    background:
+      linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+      rgba(248, 250, 252, 0.88);
+    background-size: 28px 28px, 28px 28px, auto;
+    z-index: 2;
+  }
+
+  .hub-panel {
+    height: 100%;
+    min-height: 326px;
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 16px;
+    background: rgba(248, 250, 252, 0.76);
+    padding: 16px;
+  }
+
+  .hub-list {
+    display: grid;
+    gap: 8px;
+    max-height: 196px;
+    overflow: auto;
+    padding-right: 4px;
+  }
+
+  .hub-list button {
+    width: 100%;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--tf-slate-700);
+    padding: 10px 12px;
+    text-align: left;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  }
+
+  .hub-list button:hover,
+  .hub-list button.is-active {
+    border-color: rgba(37, 99, 235, 0.44);
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .hub-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 5px;
+  }
+
+  .nearby-hubs {
+    border-top: 1px solid rgba(148, 163, 184, 0.24);
+    padding-top: 12px;
+  }
+
+  .nearby-hubs button {
+    border: 0;
+    background: transparent;
+    color: var(--tf-blue);
+    font-weight: 750;
+    padding: 0;
+  }
+
+  .hub-info-window {
+    min-width: 220px;
+    color: #0f172a;
+  }
+
+  .hub-info-window h3 {
+    font-size: 1rem;
+    margin: 0 0 8px;
+  }
+
+  .hub-info-window p {
+    margin: 4px 0;
+  }
+
+  @media (max-width: 575px) {
+    .trackflow-map-shell,
+    .trackflow-google-map,
+    .hub-panel {
+      min-height: 300px;
+    }
+
+    .hub-list {
+      max-height: 168px;
+    }
+  }
+</style>
+
+<script>
+  window.trackFlowMapReady = false;
+
+  (() => {
+    const hubs = JSON.parse(document.getElementById("trackflow-hub-data").textContent);
+    const mapElement = document.getElementById("trackflowHubMap");
+    const loadingState = document.querySelector("[data-map-loading]");
+    const errorState = document.querySelector("[data-map-error]");
+    const errorMessage = document.querySelector("[data-map-error-message]");
+    const searchInput = document.querySelector("[data-hub-search]");
+    const cityFilter = document.querySelector("[data-hub-city-filter]");
+    const hubList = document.querySelector("[data-hub-list]");
+    const nearbyHubs = document.querySelector("[data-nearby-hubs]");
+    const locationButton = document.querySelector("[data-use-location]");
+    let map;
+    let infoWindow;
+    let markers = [];
+    let cluster;
+    let routeLine;
+    let activeHub;
+
+    const showError = (message) => {
+      if (loadingState) loadingState.classList.add("d-none");
+      if (errorMessage) errorMessage.textContent = message;
+      if (errorState) errorState.classList.remove("d-none");
+    };
+
+    const hideState = () => {
+      if (loadingState) loadingState.classList.add("d-none");
+      if (errorState) errorState.classList.add("d-none");
+    };
+
+    const distanceKm = (a, b) => {
+      const toRad = (value) => value * Math.PI / 180;
+      const earthRadius = 6371;
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const lat1 = toRad(a.lat);
+      const lat2 = toRad(b.lat);
+      const haversine = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+      return earthRadius * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+    };
+
+    const visibleHubs = () => {
+      const query = (searchInput?.value || "").trim().toLowerCase();
+      const city = cityFilter?.value || "";
+      return hubs.filter((hub) => {
+        const text = `${hub.name} ${hub.city} ${hub.state} ${hub.code}`.toLowerCase();
+        return (!city || hub.city === city) && (!query || text.includes(query));
+      });
+    };
+
+    const infoHtml = (hub) => `
+      <div class="hub-info-window">
+        <h3>${hub.name}</h3>
+        <p><strong>City:</strong> ${hub.city}</p>
+        <p><strong>State/Region:</strong> ${hub.state}</p>
+        <p><strong>Hub Code:</strong> ${hub.code || "-"}</p>
+        <p><strong>Contact:</strong> ${hub.contact || "-"}</p>
+        <p><strong>Status:</strong> ${hub.status}</p>
+      </div>
+    `;
+
+    const setNearby = (origin) => {
+      const nearest = hubs
+        .filter((hub) => hub !== origin)
+        .map((hub) => ({ ...hub, distance: distanceKm(origin, hub) }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 5);
+
+      nearbyHubs.innerHTML = nearest.map((hub) => `
+        <div class="d-flex justify-content-between gap-2 mb-1">
+          <button type="button" data-focus-hub="${hub.code}">${hub.city}</button>
+          <span>${Math.round(hub.distance)} km</span>
+        </div>
+      `).join("");
+    };
+
+    const focusHub = (hub) => {
+      activeHub = hub;
+      map.panTo({ lat: hub.lat, lng: hub.lng });
+      map.setZoom(Math.max(map.getZoom(), 8));
+      const marker = markers.find((item) => item.hub.code === hub.code);
+      if (marker) {
+        infoWindow.setContent(infoHtml(hub));
+        infoWindow.open({ anchor: marker.marker, map });
+      }
+      setNearby(hub);
+      renderHubList();
+    };
+
+    const renderHubList = () => {
+      const filtered = visibleHubs();
+      hubList.innerHTML = filtered.map((hub) => `
+        <button type="button" class="${activeHub?.code === hub.code ? "is-active" : ""}" data-focus-hub="${hub.code}">
+          <div class="fw-bold">${hub.city}</div>
+          <div class="small text-muted">${hub.name}</div>
+          <div class="hub-meta">
+            <span class="badge text-bg-primary">${hub.code}</span>
+            <span class="badge ${hub.status === "Active" ? "text-bg-success" : "text-bg-secondary"}">${hub.status}</span>
+          </div>
+        </button>
+      `).join("") || '<div class="empty-state py-3">No hubs match this filter.</div>';
+    };
+
+    const refreshMarkers = () => {
+      const filteredCodes = new Set(visibleHubs().map((hub) => hub.code));
+      const visibleMarkers = [];
+      markers.forEach(({ marker, hub }) => {
+        const shouldShow = filteredCodes.has(hub.code);
+        marker.setMap(shouldShow ? map : null);
+        if (shouldShow) visibleMarkers.push(marker);
+      });
+
+      if (cluster) {
+        cluster.clearMarkers();
+        cluster.addMarkers(visibleMarkers);
+      }
+      if (routeLine) {
+        routeLine.setPath(visibleHubs().map((hub) => ({ lat: hub.lat, lng: hub.lng })));
+      }
+      renderHubList();
+    };
+
+    window.initTrackFlowHubMap = () => {
+      if (!mapElement || !hubs.length) {
+        showError("No TrackFlow hub locations are available.");
+        return;
+      }
+
+      map = new google.maps.Map(mapElement, {
+        center: { lat: 12.6, lng: 78.9 },
+        zoom: 6,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: true,
+      });
+      infoWindow = new google.maps.InfoWindow();
+      const bounds = new google.maps.LatLngBounds();
+
+      markers = hubs.map((hub) => {
+        const marker = new google.maps.Marker({
+          position: { lat: hub.lat, lng: hub.lng },
+          title: `${hub.name} - ${hub.city}`,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            fillColor: hub.status === "Active" ? "#2563eb" : "#64748b",
+            fillOpacity: 1,
+            strokeColor: "#ffffff",
+            strokeWeight: 3,
+            scale: 8,
+          },
+        });
+        marker.addListener("click", () => focusHub(hub));
+        bounds.extend(marker.getPosition());
+        return { marker, hub };
+      });
+
+      routeLine = new google.maps.Polyline({
+        path: hubs.map((hub) => ({ lat: hub.lat, lng: hub.lng })),
+        geodesic: true,
+        strokeColor: "#2563eb",
+        strokeOpacity: 0.42,
+        strokeWeight: 3,
+        map,
+      });
+
+      if (window.markerClusterer?.MarkerClusterer) {
+        cluster = new markerClusterer.MarkerClusterer({
+          map,
+          markers: markers.map((item) => item.marker),
+        });
+      } else {
+        markers.forEach(({ marker }) => marker.setMap(map));
+      }
+
+      map.fitBounds(bounds, 48);
+      refreshMarkers();
+      hideState();
+      window.trackFlowMapReady = true;
+    };
+
+    window.gm_authFailure = () => {
+      showError("Google Maps authentication failed. Verify GOOGLE_MAPS_API_KEY.");
+    };
+
+    searchInput?.addEventListener("input", refreshMarkers);
+    cityFilter?.addEventListener("change", refreshMarkers);
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("[data-focus-hub]");
+      if (!target || !map) return;
+      const hub = hubs.find((item) => item.code === target.dataset.focusHub);
+      if (hub) focusHub(hub);
+    });
+
+    locationButton?.addEventListener("click", () => {
+      if (!map) {
+        showError("Google Maps is not ready yet.");
+        return;
+      }
+      if (!navigator.geolocation) {
+        showError("Current location is not supported by this browser.");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const origin = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          map.panTo(origin);
+          map.setZoom(7);
+          setNearby(origin);
+        },
+        () => showError("Unable to read current location permission.")
+      );
+    });
+
+    renderHubList();
+  })();
+</script>
+
+{% if google_maps_api_key %}
+  <script src="https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js" defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key|urlencode }}&callback=initTrackFlowHubMap&loading=async" async defer onerror="document.querySelector('[data-map-loading]')?.classList.add('d-none');document.querySelector('[data-map-error]')?.classList.remove('d-none');"></script>
+{% else %}
+  <script>
+    document.querySelector("[data-map-loading]")?.classList.add("d-none");
+    document.querySelector("[data-map-error]")?.classList.remove("d-none");
+    const message = document.querySelector("[data-map-error-message]");
+    if (message) message.textContent = "Set GOOGLE_MAPS_API_KEY in the environment to enable Google Maps.";
+  </script>
+{% endif %}
 {% endblock %}
