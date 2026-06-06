@@ -9,7 +9,7 @@
           <h1 class="page-title mt-2">{{ shipment.awb }}</h1>
           <span class="badge {% if shipment.status == 'DELIVERED' %}text-bg-success{% elif shipment.status == 'FAILED' or shipment.status == 'RTO' %}text-bg-danger{% elif shipment.status == 'IN_TRANSIT' or shipment.status == 'OUT_FOR_DELIVERY' %}text-bg-info{% else %}text-bg-secondary{% endif %}">{{ shipment.get_status_display }}</span>
         </div>
-        <a class="btn btn-primary" href="{% url 'shipment-label' shipment.awb %}"><i class="bi bi-download me-1"></i> Download Label</a>
+        <a class="btn btn-primary" href="{% url 'shipment-label-page' shipment.awb %}"><i class="bi bi-download me-1"></i> Download Label</a>
       </div>
       <div class="mt-4">
         <div class="d-flex justify-content-between small text-muted mb-2">

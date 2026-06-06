@@ -209,4 +209,10 @@ def bulk_upload_page(request):
 @login_required(login_url='account-login-page')
 def shipment_label_page(request, awb):
     shipment = get_object_or_404(scoped_shipments_for_user(request.user), awb=awb)
-    return render(request, 'shipments/label.html', {'shipment': shipment})
+    pdf = generate_label_pdf(shipment.id)
+    return FileResponse(
+        pdf,
+        as_attachment=True,
+        content_type='application/pdf',
+        filename=f'{shipment.awb}.pdf',
+    )
