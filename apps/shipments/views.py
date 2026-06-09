@@ -1,6 +1,7 @@
 from django.http import FileResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from django_fsm import can_proceed
 from rest_framework import request, viewsets
 from rest_framework.decorators import action
@@ -107,6 +108,44 @@ def scoped_shipments_for_user(user):
     return queryset.filter(merchant=user)
 
 
+def build_transit_timeline(shipment):
+    try:
+        transit_events = list(shipment.transit_events.all())
+    except Exception:
+        return [], True
+
+    current_time = timezone.now()
+    latest_event = None
+    for event in transit_events:
+        event.is_pending = event.event_timestamp > current_time
+        event.is_latest = False
+        event.is_completed = False
+        if event.is_pending:
+            event.timeline_label = f'Expected at {event.hub_name}'
+        elif event.event_type == 'REACHED_HUB':
+            event.timeline_label = f'Reached {event.hub_name}'
+        elif event.event_type == 'DEPARTED_HUB':
+            event.timeline_label = f'Departed {event.hub_name}'
+        elif event.event_type == 'ARRIVED_DESTINATION_HUB':
+            event.timeline_label = f'Arrived at {event.hub_name}'
+        elif event.event_type == 'OUT_FOR_DELIVERY':
+            event.timeline_label = f'Out for delivery from {event.hub_name}'
+        elif event.event_type == 'DELIVERED':
+            event.timeline_label = f'Delivered from {event.hub_name}'
+        else:
+            event.timeline_label = f'{event.get_event_type_display()} {event.hub_name}'
+        if not event.is_pending:
+            latest_event = event
+
+    if latest_event:
+        latest_event.is_latest = True
+
+    for event in transit_events:
+        event.is_completed = not event.is_pending and not event.is_latest
+
+    return transit_events, False
+
+
 @login_required(login_url='account-login-page')
 def shipment_list_page(request):
     shipments = scoped_shipments_for_user(request.user)
@@ -142,10 +181,22 @@ def shipment_list_page(request):
 @login_required(login_url='account-login-page')
 def shipment_detail_page(request, awb):
     shipment = get_object_or_404(
-        scoped_shipments_for_user(request.user).prefetch_related('tracking_events'),
+        scoped_shipments_for_user(request.user).prefetch_related(
+            'tracking_events',
+            'transit_events',
+        ),
         awb=awb,
     )
-    return render(request, 'shipments/shipment_detail.html', {'shipment': shipment})
+    transit_events, transit_timeline_failed = build_transit_timeline(shipment)
+    return render(
+        request,
+        'shipments/shipment_detail.html',
+        {
+            'shipment': shipment,
+            'transit_events': transit_events,
+            'transit_timeline_failed': transit_timeline_failed,
+        },
+    )
 
 
 @login_required(login_url='account-login-page')

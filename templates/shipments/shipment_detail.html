@@ -18,7 +18,48 @@
         <div class="progress-rail"><span style="width: {% if shipment.status == 'DELIVERED' %}100{% elif shipment.status == 'IN_TRANSIT' or shipment.status == 'OUT_FOR_DELIVERY' %}68{% elif shipment.status == 'FAILED' or shipment.status == 'RTO' %}44{% else %}28{% endif %}%"></span></div>
       </div>
     </div>
-    <div class="row g-3">
+    <div class="card mt-3">
+      <div class="card-body p-4">
+        <span class="eyebrow">In Transit</span>
+        <h2 class="h5 fw-bold mt-2 mb-4">Hub Transit Timeline</h2>
+
+        {% if transit_timeline_failed %}
+          <div class="empty-state py-3">Transit updates are temporarily unavailable.</div>
+        {% elif transit_events %}
+          <div class="hub-transit-timeline">
+            {% for event in transit_events %}
+              <div class="hub-transit-item {% if event.is_latest %}is-active{% elif event.is_pending %}is-pending{% else %}is-complete{% endif %}">
+                <span class="hub-transit-icon">
+                  {% if event.is_pending %}
+                    <i class="bi bi-circle"></i>
+                  {% elif event.is_latest %}
+                    <i class="bi bi-record-circle"></i>
+                  {% else %}
+                    <i class="bi bi-check-circle-fill"></i>
+                  {% endif %}
+                </span>
+                <div class="hub-transit-content">
+                  <div class="d-flex flex-wrap justify-content-between gap-2">
+                    <strong>{{ event.timeline_label }}</strong>
+                    <span class="text-muted small">{{ event.event_timestamp|date:"d M Y - h:i A" }}</span>
+                  </div>
+                  {% if event.city or event.remarks %}
+                    <div class="text-muted small mt-1">
+                      {% if event.city %}{{ event.city }}{% endif %}
+                      {% if event.city and event.remarks %} - {% endif %}
+                      {% if event.remarks %}{{ event.remarks }}{% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state py-3">No transit updates available.</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row g-3 mt-1">
       <div class="col-md-6"><div class="card card-body p-4 h-100"><span class="eyebrow">Origin</span><h2 class="h5 fw-bold mt-2">Pickup Address</h2><p class="mb-0 text-muted">{{ shipment.sender_address }}</p></div></div>
       <div class="col-md-6"><div class="card card-body p-4 h-100"><span class="eyebrow">Destination</span><h2 class="h5 fw-bold mt-2">Delivery Address</h2><p class="mb-0 text-muted">{{ shipment.receiver_address }}</p></div></div>
     </div>
@@ -55,4 +96,79 @@
       </div>
     </div>
   </main>
+  <style>
+    .hub-transit-timeline {
+      display: grid;
+      gap: 0;
+    }
+
+    .hub-transit-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 12px;
+      padding-bottom: 20px;
+    }
+
+    .hub-transit-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .hub-transit-item::before {
+      content: "";
+      position: absolute;
+      left: 13px;
+      top: 28px;
+      bottom: 0;
+      width: 2px;
+      background: var(--tf-slate-200);
+    }
+
+    .hub-transit-item:last-child::before {
+      display: none;
+    }
+
+    .hub-transit-icon {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--tf-white);
+      color: var(--tf-emerald);
+      font-size: 1rem;
+    }
+
+    .hub-transit-item.is-active .hub-transit-icon {
+      color: var(--tf-blue);
+      box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.08);
+    }
+
+    .hub-transit-item.is-pending .hub-transit-icon {
+      color: var(--tf-slate-500);
+    }
+
+    .hub-transit-content {
+      min-width: 0;
+      padding: 2px 0;
+    }
+
+    @media (max-width: 575px) {
+      .hub-transit-item {
+        grid-template-columns: 24px minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .hub-transit-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      .hub-transit-item::before {
+        left: 11px;
+      }
+    }
+  </style>
 {% endblock %}

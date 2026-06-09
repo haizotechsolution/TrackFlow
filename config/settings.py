@@ -124,7 +124,7 @@ else:
             "ENGINE": DB_ENGINE,
             "NAME": env("DB_NAME", default="trackflow_db"),
             "USER": env("DB_USER", default="postgres"),
-            "PASSWORD": env("DB_PASSWORD", default="oracle"),
+            "PASSWORD": env("DB_PASSWORD", default="0718"),
             "HOST": env("DB_HOST", default="localhost"),
             "PORT": env("DB_PORT", default="5432"),
         }
@@ -308,7 +308,7 @@ WHATSAPP_TOKEN = env("WHATSAPP_TOKEN", default="")
 # ==========================================
 # MAPS
 # ==========================================
-GOOGLE_MAPS_API_KEY = env("GOOGLE_MAPS_API_KEY", default="")
+GOOGLE_MAPS_API_KEY = env("GOOGLE_MAPS_API_KEY", default="AIzaSyA69xGcmBQYt6JDbWMWq55AoZgUiRFho4w")
 
 # ==========================================
 # TEST SETTINGS
